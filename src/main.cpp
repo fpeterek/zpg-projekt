@@ -9,8 +9,8 @@
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
 
 //Include the standard C++ headers  
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 
 
@@ -35,7 +35,9 @@ static void window_size_callback(GLFWwindow* window, int width, int height){
 static void cursor_callback(GLFWwindow *window, double x, double y){ printf("cursor_callback \n"); }
 
 static void button_callback(GLFWwindow* window, int button, int action, int mode){
-	if (action == GLFW_PRESS) printf("button_callback [%d,%d,%d]\n", button, action, mode);
+	if (action == GLFW_PRESS) {
+	    printf("button_callback [%d,%d,%d]\n", button, action, mode);
+	}
 }
 
 
@@ -55,16 +57,17 @@ glm::mat4 View = glm::lookAt(
 glm::mat4 Model = glm::mat4(1.0f);
 
 
-int main(void)
-{
+int main(int argc, const char * argv[]) {
 	GLFWwindow* window;
 	glfwSetErrorCallback(error_callback);
 
-	if (!glfwInit())
-		exit(EXIT_FAILURE);
-	window = glfwCreateWindow(640, 480, "ZPG", NULL, NULL);
-	if (!window)
-	{
+	if (!glfwInit()) {
+        exit(EXIT_FAILURE);
+    }
+
+	window = glfwCreateWindow(640, 480, "ZPG", nullptr, nullptr);
+
+	if (not window) {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
@@ -95,9 +98,8 @@ int main(void)
 	glLoadIdentity();
 	glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
 
+	while (not glfwWindowShouldClose(window)) {
 
-	while (!glfwWindowShouldClose(window))
-	{
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		glMatrixMode(GL_MODELVIEW);
@@ -105,19 +107,29 @@ int main(void)
 		glRotatef((float)glfwGetTime() * -50.f, 0.f, 0.f, 1.f);
 		
 		glBegin(GL_TRIANGLES);
-			glColor3f(1.f, 0.f, 0.f);
-			glVertex3f(-0.6f, -0.4f, 0.f);
-			glColor3f(0.f, 1.f, 0.f);
-			glVertex3f(0.6f, -0.4f, 0.f);
-			glColor3f(0.f, 0.f, 1.f);
-			glVertex3f(0.f, 0.6f, 0.f);
+        glColor3f(1.f, 0.f, 0.f);
+        glVertex3f(-0.6f, -0.4f, 0.f);
+        glColor3f(0.f, 1.f, 0.f);
+        glVertex3f(0.6f, -0.4f, 0.f);
+        glColor3f(0.f, 0.f, 1.f);
+        glVertex3f(0.f, 0.2f, 0.f);
 		glEnd();
+
+        glBegin(GL_TRIANGLES);
+        glColor3f(1.f, 0.f, 0.f);
+        glVertex3f(-0.6f, -0.4f, 0.f);
+        glColor3f(0.f, 1.f, 0.f);
+        glVertex3f(0.6f, -0.4f, 0.f);
+        glColor3f(0.f, 0.f, 1.f);
+        glVertex3f(0.f, -1.0f, 0.f);
+        glEnd();
+
 		glfwSwapBuffers(window);
 		
 		glfwPollEvents();
 	}
 	glfwDestroyWindow(window);
 	glfwTerminate();
-	exit(EXIT_SUCCESS);
+
 }
 

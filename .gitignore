@@ -1,0 +1,8 @@
+*.out
+.idea
+.DS_Store
+build/
+*.swp
+*.o
+cmake-build-debug
+
