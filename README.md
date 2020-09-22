@@ -13,3 +13,10 @@ Manjaro, libraries installed using Pacman.
 ```
 g++ -std=c++11 main.cpp -lglfw -lglut -lGL -ldl -pthread
 ```
+
+macOS:
+
+```
+g++ src/main.cpp -std=c++11 -pthread -lglfw -ldl -lglut -framework OpenGL
+```
+
