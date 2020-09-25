@@ -8,4 +8,4 @@ link_libraries(-lglfw -lglut -lGL -ldl -pthread)
 include_directories(/usr/include /usr/local/include include)
 
 add_executable(zpg_projekt
-        src/main.cpp include/application.hpp src/application.cpp include/shaders.hpp src/shaders.cpp)
+        src/main.cpp src/application.cpp src/shaders.cpp)

@@ -17,7 +17,20 @@ glm::mat4 Application::View = glm::lookAt(
 // Model matrix : an identity matrix (model will be at the origin)
 glm::mat4 Application::Model = glm::mat4(1.0f);
 
+GLFWwindow * Application::window = nullptr;
+Application::TimePoint Application::lastTime = std::chrono::high_resolution_clock::now();
+GLuint Application::VBO = 0;
+GLuint Application::VAO = 0;
 GLuint Application::shaderProgram = glCreateProgram();
+int Application::bufferWidth = 0;
+int Application::bufferHeight = 0;
+float Application::bufferRatio = 0.f;
+
+float Application::points[9] = {
+        0.0f, 0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f
+};
 
 void Application::compileShaders() {
 
@@ -53,44 +66,29 @@ bool Application::checkShaders() {
 
 }
 
-void Application::run() {
+void Application::initGLFWContext() {
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+}
 
-    initGLFW();
+void Application::initWindow() {
+    window = glfwCreateWindow(800, 600, "ZPG", nullptr, nullptr);
+    if (not window) {
+        glfwTerminate();
+        throw std::runtime_error("Window could not be initialized");
+    }
+}
 
+void Application::initGLEW() {
+    glewExperimental = GL_TRUE;
+    glewInit();
+}
+
+void Application::initShaders() {
     compileShaders();
     if (not checkShaders()) {
-        return;
+        throw std::runtime_error("Shaders could not be initialized");
     }
-    printInfo();
-    initVBO();
-    initVAO();
-
-    loop();
-
-    cleanup();
-
-}
-
-void Application::loop() {
-
-    while (not glfwWindowShouldClose(window)) {
-        // clear color and depth buffer
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        // draw triangles
-        glDrawArrays(GL_TRIANGLES, 0, 3); //mode,first,count
-        // update other events like input handling
-        glfwPollEvents();
-        // put the stuff we’ve been drawing onto the display
-        glfwSwapBuffers(window);
-    }
-
-}
-
-void Application::cleanup() {
-    glfwDestroyWindow(window);
-    glfwTerminate();
 }
 
 void Application::initVBO() {
@@ -127,8 +125,7 @@ void Application::printInfo() {
 void Application::initGLFW() {
 
     if (not glfwInit()) {
-        std::cerr << "ERROR: could not start GLFW3" << std::endl;
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("ERROR: could not start GLFW3");
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -136,4 +133,76 @@ void Application::initGLFW() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+}
+void Application::initGL() {
+    initGLFW();
+    initGLFWContext();
+    initWindow();
+    initGLEW();
+    initShaders();
+    printInfo();
+}
+
+void Application::initViewport() {
+    glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
+    bufferRatio = bufferWidth / (float)bufferHeight;
+    glViewport(0, 0, bufferWidth, bufferHeight);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-bufferRatio, bufferRatio, -1.f, 1.f, 1.f, -1.f);
+}
+
+void Application::initApplication() {
+    initVBO();
+    initVAO();
+    initViewport();
+}
+
+void Application::init() {
+    initGL();
+    initApplication();
+}
+
+void Application::run() {
+    init();
+    loop();
+    cleanup();
+}
+
+void Application::update(const float dt) {
+
+    std::cout << "Time delta: " << dt << std::endl;
+
+    // clear color and depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
+    // draw triangles
+    glDrawArrays(GL_TRIANGLES, 0, 3); //mode,first,count
+    // update other events like input handling
+    glfwPollEvents();
+    // put the stuff we’ve been drawing onto the display
+    glfwSwapBuffers(window);
+
+}
+
+void Application::loop() {
+
+    lastTime = std::chrono::high_resolution_clock::now();
+
+    while (not glfwWindowShouldClose(window)) {
+
+        const TimePoint now = std::chrono::high_resolution_clock::now();
+        const float delta = std::chrono::duration_cast<Second>(now - lastTime).count();
+        update(delta);
+        lastTime = now;
+
+    }
+
+}
+
+void Application::cleanup() {
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }

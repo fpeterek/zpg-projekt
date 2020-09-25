@@ -14,12 +14,7 @@
 
 #include "shaders.hpp"
 
-float points[] = {
-        0.0f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f
-};
-
+#include "application.hpp"
 
 
 static void error_callback(int error, const char * description) {
@@ -61,25 +56,7 @@ int main(int argc, const char * argv[]) {
 
     glfwSetErrorCallback(error_callback);
 
-    window = glfwCreateWindow(800, 600, "ZPG", nullptr, nullptr);
-    if (not window) {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-    // start GLEW extension handler
-    glewExperimental = GL_TRUE;
-    glewInit();
-
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    float ratio = width / (float)height;
-    glViewport(0, 0, width, height);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+    Application::run();
 
 }
 
