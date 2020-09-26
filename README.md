@@ -11,7 +11,7 @@ My PC:
 Manjaro, libraries installed using Pacman.
 
 ```
-g++ -std=c++11 main.cpp -lglfw -lglut -lGL -ldl -pthread
+g++ -std=c++11 src/* -I include -lglfw -lglut -lGL -ldl -pthread -lGLEW -O3 -o zpg
 ```
 
 macOS:

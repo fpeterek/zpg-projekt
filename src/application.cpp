@@ -21,7 +21,7 @@ GLFWwindow * Application::window = nullptr;
 Application::TimePoint Application::lastTime = std::chrono::high_resolution_clock::now();
 GLuint Application::VBO = 0;
 GLuint Application::VAO = 0;
-GLuint Application::shaderProgram = glCreateProgram();
+GLuint Application::shaderProgram = 0;
 int Application::bufferWidth = 0;
 int Application::bufferHeight = 0;
 float Application::bufferRatio = 0.f;
@@ -32,7 +32,53 @@ float Application::points[9] = {
         -0.5f, -0.5f, 0.0f
 };
 
+void Application::errorCallback(int error, const char * description) {
+    fputs(description, stderr);
+}
+
+void Application::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+    std::cout << "key_callback [" << key << "," << scancode << "," << action << "," << mods << "]" << std::endl;
+}
+
+void Application::windowFocusCallback(GLFWwindow * window, int focused) {
+    std::cout << "window_focus_callback" << std::endl;
+}
+
+void Application::windowIconifyCallback(GLFWwindow * window, int iconified) {
+    std::cout << "window_iconify_callback" << std::endl;
+}
+
+void Application::windowSizeCallback(GLFWwindow * window, int width, int height) {
+    std::cout << "resize " << width << ", " << height << std::endl;
+    glViewport(0, 0, width, height);
+}
+
+void Application::cursorPosCallback(GLFWwindow * window, double x, double y) {
+    std::cout << "cursor_pos_callback" << std::endl;
+}
+
+void Application::buttonCallback(GLFWwindow * window, int button, int action, int mode) {
+    if (action == GLFW_PRESS) {
+        std::cout << "button_callback [" << button << "," << action << "," << mode << "]"<< std::endl;
+    }
+}
+
+void Application::initCallbacks() {
+    glfwSetErrorCallback(Application::errorCallback);
+    glfwSetKeyCallback(window, Application::keyCallback);
+    glfwSetWindowFocusCallback(window, Application::windowFocusCallback);
+    glfwSetWindowIconifyCallback(window, Application::windowIconifyCallback);
+    glfwSetWindowSizeCallback(window, Application::windowSizeCallback);
+    glfwSetCursorPosCallback(window, Application::cursorPosCallback);
+    glfwSetMouseButtonCallback(window, Application::buttonCallback);
+}
+
 void Application::compileShaders() {
+
+    Application::shaderProgram = glCreateProgram();
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &Shaders::vertexShader, nullptr);
@@ -136,8 +182,8 @@ void Application::initGLFW() {
 }
 void Application::initGL() {
     initGLFW();
-    initGLFWContext();
     initWindow();
+    initGLFWContext();
     initGLEW();
     initShaders();
     printInfo();
@@ -147,15 +193,12 @@ void Application::initViewport() {
     glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
     bufferRatio = bufferWidth / (float)bufferHeight;
     glViewport(0, 0, bufferWidth, bufferHeight);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-bufferRatio, bufferRatio, -1.f, 1.f, 1.f, -1.f);
 }
 
 void Application::initApplication() {
     initVBO();
     initVAO();
+    initCallbacks();
     initViewport();
 }
 
@@ -165,14 +208,14 @@ void Application::init() {
 }
 
 void Application::run() {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     init();
+    std::cout << "Init complete" << std::endl;
     loop();
     cleanup();
 }
 
 void Application::update(const float dt) {
-
-    std::cout << "Time delta: " << dt << std::endl;
 
     // clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
