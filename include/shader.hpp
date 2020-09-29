@@ -16,8 +16,10 @@ class Shader {
     GLuint fragmentId;
     GLuint shaderId;
 
+    typedef decltype(GL_FRAGMENT_SHADER) ShaderType;
+
     static std::string loadShader(const std::string & filename);
-    static GLuint compileShader(const std::string & shader);
+    static GLuint compileShader(const std::string & shader, ShaderType type);
 
     void compile(const std::string & vertex, const std::string & fragment);
     bool checkShader() const;

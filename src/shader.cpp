@@ -15,15 +15,15 @@ std::string Shader::loadShader(const std::string & filename) {
     while (in) {
         std::string line;
         std::getline(in, line);
-        ss << line;
+        ss << line << "\n";
     }
 
     return ss.str();
 }
 
-GLuint Shader::compileShader(const std::string & shader) {
+GLuint Shader::compileShader(const std::string & shader, const ShaderType type) {
 
-    GLuint id = glCreateShader(GL_VERTEX_SHADER);
+    GLuint id = glCreateShader(type);
     const char * shaderPtr = shader.c_str();
     glShaderSource(id, 1, &shaderPtr, nullptr);
     glCompileShader(id);
@@ -35,8 +35,8 @@ void Shader::compile(const std::string & vertex, const std::string & fragment) {
 
     shaderId = glCreateProgram();
 
-    vertexId = compileShader(vertex);
-    fragmentId = compileShader(fragment);
+    vertexId = compileShader(vertex, GL_VERTEX_SHADER);
+    fragmentId = compileShader(fragment, GL_FRAGMENT_SHADER);
 
     glAttachShader(shaderId, vertexId);
     glAttachShader(shaderId, fragmentId);
