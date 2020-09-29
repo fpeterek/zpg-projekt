@@ -67,8 +67,6 @@ class Application {
     static void initGLEW();
     static void initShaders();
 
-    static void compileShaders();
-
     static void initVBO();
     static void initVAO();
     static void initViewport();

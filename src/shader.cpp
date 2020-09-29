@@ -66,7 +66,7 @@ bool Shader::checkShader() const {
     if (status == GL_FALSE) {
         GLint infoLogLength;
         glGetProgramiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-        GLchar * strInfoLog = new GLchar[infoLogLength + 1];
+        auto * strInfoLog = new GLchar[infoLogLength + 1];
         glGetProgramInfoLog(shaderId, infoLogLength, nullptr, strInfoLog);
         std::cerr << "Linker failure: " << strInfoLog << std::endl;
         delete[] strInfoLog;

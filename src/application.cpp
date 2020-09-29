@@ -78,11 +78,6 @@ void Application::initCallbacks() {
     glfwSetMouseButtonCallback(window, Application::buttonCallback);
 }
 
-void Application::compileShaders() {
-
-
-}
-
 
 void Application::initGLFWContext() {
     glfwMakeContextCurrent(window);
@@ -172,7 +167,7 @@ void Application::initApplication() {
     initViewport();
     transformation = glm::rotate(transformation, -(float)M_PI/2 ,glm::vec3(0.0f, 0.0f, 1.0f));
     //transformation = glm::rotate(transformation, (float)M_PI/2, glm::vec3(1.0f, 0.0f, 0.0f));
-    // transformation = glm::translate(transformation, glm::vec3(0.0f, 0.0f, View));
+    transformation = glm::translate(transformation, glm::vec3(-0.5f, 0.3f, 0.f));
     transformation = glm::scale(transformation, glm::vec3(0.5f));
 }
 
@@ -195,7 +190,7 @@ void Application::update(const float dt) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     GLint modelMatrixID = currentShader->getUniformLocation("modelMatrix");
     currentShader->use();
-    glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE,  glm::value_ptr(transformation));
+    glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformation));
     glBindVertexArray(VAO);
     // draw triangles
     glDrawArrays(GL_TRIANGLES, 0, 3); //mode,first,count
