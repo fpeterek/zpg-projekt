@@ -21,10 +21,12 @@ GLFWwindow * Application::window = nullptr;
 Application::TimePoint Application::lastTime = std::chrono::high_resolution_clock::now();
 GLuint Application::VBO = 0;
 GLuint Application::VAO = 0;
-GLuint Application::shaderProgram = 0;
+std::vector<Shader> Application::shaders;
+std::vector<Shader>::iterator Application::currentShader = shaders.begin();
 int Application::bufferWidth = 0;
 int Application::bufferHeight = 0;
 float Application::bufferRatio = 0.f;
+glm::mat4 Application::transformation(1.f);
 
 float Application::points[9] = {
         0.0f, 0.5f, 0.0f,
@@ -33,7 +35,7 @@ float Application::points[9] = {
 };
 
 void Application::errorCallback(int error, const char * description) {
-    fputs(description, stderr);
+    std::cerr << description << std::endl;
 }
 
 void Application::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods) {
@@ -78,39 +80,9 @@ void Application::initCallbacks() {
 
 void Application::compileShaders() {
 
-    Application::shaderProgram = glCreateProgram();
-
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &Shaders::vertexShader, nullptr);
-    glCompileShader(vertexShader);
-
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &Shaders::fragmentShader, nullptr);
-    glCompileShader(fragmentShader);
-
-    glAttachShader(shaderProgram, fragmentShader);
-    glAttachShader(shaderProgram, vertexShader);
-    glLinkProgram(shaderProgram);
 
 }
 
-bool Application::checkShaders() {
-
-    GLint status;
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status);
-
-    if (status == GL_FALSE) {
-        GLint infoLogLength;
-        glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
-        GLchar * strInfoLog = new GLchar[infoLogLength + 1];
-        glGetProgramInfoLog(shaderProgram, infoLogLength, nullptr, strInfoLog);
-        std::cerr << "Linker failure: " << strInfoLog << std::endl;
-        delete[] strInfoLog;
-    }
-
-    return status != GL_FALSE;
-
-}
 
 void Application::initGLFWContext() {
     glfwMakeContextCurrent(window);
@@ -131,10 +103,8 @@ void Application::initGLEW() {
 }
 
 void Application::initShaders() {
-    compileShaders();
-    if (not checkShaders()) {
-        throw std::runtime_error("Shaders could not be initialized");
-    }
+    shaders.emplace_back("resources/shaders/shader.vert", "resources/shaders/shader.frag");
+    currentShader = shaders.begin();
 }
 
 void Application::initVBO() {
@@ -200,6 +170,10 @@ void Application::initApplication() {
     initVAO();
     initCallbacks();
     initViewport();
+    transformation = glm::rotate(transformation, -(float)M_PI/2 ,glm::vec3(0.0f, 0.0f, 1.0f));
+    //transformation = glm::rotate(transformation, (float)M_PI/2, glm::vec3(1.0f, 0.0f, 0.0f));
+    // transformation = glm::translate(transformation, glm::vec3(0.0f, 0.0f, View));
+    transformation = glm::scale(transformation, glm::vec3(0.5f));
 }
 
 void Application::init() {
@@ -219,7 +193,9 @@ void Application::update(const float dt) {
 
     // clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(shaderProgram);
+    GLint modelMatrixID = currentShader->getUniformLocation("modelMatrix");
+    currentShader->use();
+    glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE,  glm::value_ptr(transformation));
     glBindVertexArray(VAO);
     // draw triangles
     glDrawArrays(GL_TRIANGLES, 0, 3); //mode,first,count

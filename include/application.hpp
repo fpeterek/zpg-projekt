@@ -7,13 +7,16 @@
 
 #include <iostream>
 #include <chrono>
+#include <vector>
+#include <functional>
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "shaders.hpp"
+#include "shader.hpp"
 
 class Application {
 
@@ -26,7 +29,10 @@ class Application {
 
     static float points[9];
 
-    static GLuint shaderProgram;
+    static glm::mat4 transformation;
+
+    static std::vector<Shader> shaders;
+    static std::vector<Shader>::iterator currentShader;
 
     static GLuint VBO;
     static GLuint VAO;
@@ -62,7 +68,6 @@ class Application {
     static void initShaders();
 
     static void compileShaders();
-    static bool checkShaders();
 
     static void initVBO();
     static void initVAO();
