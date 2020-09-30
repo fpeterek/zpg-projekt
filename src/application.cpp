@@ -19,20 +19,17 @@ glm::mat4 Application::Model = glm::mat4(1.0f);
 
 GLFWwindow * Application::window = nullptr;
 Application::TimePoint Application::lastTime = std::chrono::high_resolution_clock::now();
-GLuint Application::VBO = 0;
-GLuint Application::VAO = 0;
 std::vector<Shader> Application::shaders;
 std::vector<Shader>::iterator Application::currentShader = shaders.begin();
 int Application::bufferWidth = 0;
 int Application::bufferHeight = 0;
 float Application::bufferRatio = 0.f;
-glm::mat4 Application::transformation(1.f);
 
-float Application::points[9] = {
-        0.0f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f
-};
+Renderable Application::triangle({
+    0.0f, 0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f
+});
 
 void Application::errorCallback(int error, const char * description) {
     std::cerr << description << std::endl;
@@ -102,24 +99,6 @@ void Application::initShaders() {
     currentShader = shaders.begin();
 }
 
-void Application::initVBO() {
-
-    glGenBuffers(1, &VBO); // generate the VBO
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-
-}
-
-void Application::initVAO() {
-
-    glGenVertexArrays(1, &VAO); //generate the VAO
-    glBindVertexArray(VAO); //bind the VAO
-    glEnableVertexAttribArray(0); //enable vertex attributes
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-}
-
 void Application::printInfo() {
 
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
@@ -161,14 +140,8 @@ void Application::initViewport() {
 }
 
 void Application::initApplication() {
-    initVBO();
-    initVAO();
     initCallbacks();
     initViewport();
-    transformation = glm::rotate(transformation, -(float)M_PI/2 ,glm::vec3(0.0f, 0.0f, 1.0f));
-    //transformation = glm::rotate(transformation, (float)M_PI/2, glm::vec3(1.0f, 0.0f, 0.0f));
-    transformation = glm::translate(transformation, glm::vec3(-0.5f, 0.3f, 0.f));
-    transformation = glm::scale(transformation, glm::vec3(0.5f));
 }
 
 void Application::init() {
@@ -190,10 +163,7 @@ void Application::update(const float dt) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     GLint modelMatrixID = currentShader->getUniformLocation("modelMatrix");
     currentShader->use();
-    glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformation));
-    glBindVertexArray(VAO);
-    // draw triangles
-    glDrawArrays(GL_TRIANGLES, 0, 3); //mode,first,count
+    triangle.draw(modelMatrixID);
     // update other events like input handling
     glfwPollEvents();
     // put the stuff we’ve been drawing onto the display

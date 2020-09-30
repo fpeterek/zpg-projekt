@@ -11,6 +11,6 @@ add_executable(
         zpg_projekt
         src/main.cpp
         src/application.cpp
-        src/shaders.cpp
         src/shader.cpp
+        src/renderable.cpp
 )

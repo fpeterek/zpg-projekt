@@ -17,6 +17,7 @@
 #include <GLFW/glfw3.h>
 
 #include "shader.hpp"
+#include "renderable.hpp"
 
 class Application {
 
@@ -27,15 +28,10 @@ class Application {
     // Model matrix : an identity matrix (model will be at the origin)
     static glm::mat4 Model;
 
-    static float points[9];
-
-    static glm::mat4 transformation;
+    static Renderable triangle;
 
     static std::vector<Shader> shaders;
     static std::vector<Shader>::iterator currentShader;
-
-    static GLuint VBO;
-    static GLuint VAO;
 
     static int bufferWidth;
     static int bufferHeight;
@@ -67,8 +63,6 @@ class Application {
     static void initGLEW();
     static void initShaders();
 
-    static void initVBO();
-    static void initVAO();
     static void initViewport();
 
     static void initGL();
