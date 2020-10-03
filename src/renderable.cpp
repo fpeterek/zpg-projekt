@@ -48,9 +48,7 @@ void Renderable::draw(const GLuint modelId) {
 }
 
 Renderable::Renderable(std::vector<float> && points) : transformation(1.f), vbo(0), vao(0), points(points) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     initVbo();
     initVao();
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 

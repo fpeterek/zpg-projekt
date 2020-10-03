@@ -4,75 +4,81 @@
 
 #include "application.hpp"
 
-// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-glm::mat4 Application::Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.01f, 100.0f);
+#include <algorithm>
 
-// Camera matrix
-glm::mat4 Application::View = glm::lookAt(
-        glm::vec3(10, 10, 10), // Camera is at (4,3,-3), in World Space
-        glm::vec3(0, 0, 0), // and looks at the origin
-        glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
-);
-
-// Model matrix : an identity matrix (model will be at the origin)
-glm::mat4 Application::Model = glm::mat4(1.0f);
-
-GLFWwindow * Application::window = nullptr;
-Application::TimePoint Application::lastTime = std::chrono::high_resolution_clock::now();
-std::vector<Shader> Application::shaders;
-std::vector<Shader>::iterator Application::currentShader = shaders.begin();
-int Application::bufferWidth = 0;
-int Application::bufferHeight = 0;
-float Application::bufferRatio = 0.f;
-
-Renderable Application::triangle({
-    0.0f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f
-});
+Application Application::application;
 
 void Application::errorCallback(int error, const char * description) {
     std::cerr << description << std::endl;
 }
 
-void Application::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods) {
+void Application::keyCallback(GLFWwindow * win, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GL_TRUE);
+        glfwSetWindowShouldClose(win, GL_TRUE);
     }
     std::cout << "key_callback [" << key << "," << scancode << "," << action << "," << mods << "]" << std::endl;
 }
 
-void Application::windowFocusCallback(GLFWwindow * window, int focused) {
+void Application::windowFocusCallback(GLFWwindow * win, int focused) {
     std::cout << "window_focus_callback" << std::endl;
 }
 
-void Application::windowIconifyCallback(GLFWwindow * window, int iconified) {
+void Application::windowIconifyCallback(GLFWwindow * win, int iconified) {
     std::cout << "window_iconify_callback" << std::endl;
 }
 
-void Application::windowSizeCallback(GLFWwindow * window, int width, int height) {
+void Application::windowSizeCallback(GLFWwindow * win, int width, int height) {
     std::cout << "resize " << width << ", " << height << std::endl;
     glViewport(0, 0, width, height);
 }
 
-void Application::cursorPosCallback(GLFWwindow * window, double x, double y) {
+void Application::cursorPosCallback(GLFWwindow * win, double x, double y) {
     std::cout << "cursor_pos_callback" << std::endl;
 }
 
-void Application::buttonCallback(GLFWwindow * window, int button, int action, int mode) {
+void Application::buttonCallback(GLFWwindow * win, int button, int action, int mode) {
     if (action == GLFW_PRESS) {
         std::cout << "button_callback [" << button << "," << action << "," << mode << "]"<< std::endl;
     }
 }
 
 void Application::initCallbacks() {
-    glfwSetErrorCallback(Application::errorCallback);
-    glfwSetKeyCallback(window, Application::keyCallback);
-    glfwSetWindowFocusCallback(window, Application::windowFocusCallback);
-    glfwSetWindowIconifyCallback(window, Application::windowIconifyCallback);
-    glfwSetWindowSizeCallback(window, Application::windowSizeCallback);
-    glfwSetCursorPosCallback(window, Application::cursorPosCallback);
-    glfwSetMouseButtonCallback(window, Application::buttonCallback);
+
+    auto error = [](int error, const char * description) {
+        application.errorCallback(error, description);
+    };
+    glfwSetErrorCallback(error);
+
+    auto key = [](GLFWwindow * win, int key, int scancode, int action, int mods) {
+        application.keyCallback(win, key, scancode, action, mods);
+    };
+    glfwSetKeyCallback(window, key);
+
+    auto focus = [](GLFWwindow * win, int focused) {
+        application.windowFocusCallback(win, focused);
+    };
+    glfwSetWindowFocusCallback(window, focus);
+
+    auto iconify = [](GLFWwindow * win, int iconified) {
+        application.windowIconifyCallback(win, iconified);
+    };
+    glfwSetWindowIconifyCallback(window, iconify);
+
+    auto size = [](GLFWwindow * win, int width, int length) {
+        application.windowSizeCallback(win, width, length);
+    };
+    glfwSetWindowSizeCallback(window, size);
+
+    auto cursor = [](GLFWwindow * win, double x, double y) {
+        application.cursorPosCallback(win, x, y);
+    };
+    glfwSetCursorPosCallback(window, cursor);
+
+    auto mouseButton = [](GLFWwindow * win, int button, int action, int mode) {
+        application.buttonCallback(win, button, action, mode);
+    };
+    glfwSetMouseButtonCallback(window, mouseButton);
+
 }
 
 
@@ -96,7 +102,7 @@ void Application::initGLEW() {
 
 void Application::initShaders() {
     shaders.emplace_back("resources/shaders/shader.vert", "resources/shaders/shader.frag");
-    currentShader = shaders.begin();
+    currentShader = *shaders.begin();
 }
 
 void Application::printInfo() {
@@ -118,10 +124,10 @@ void Application::initGLFW() {
         throw std::runtime_error("ERROR: could not start GLFW3");
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    /*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 
 }
 void Application::initGL() {
@@ -144,26 +150,23 @@ void Application::initApplication() {
     initViewport();
 }
 
-void Application::init() {
-    initGL();
-    initApplication();
-}
-
 void Application::run() {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
-    init();
-    std::cout << "Init complete" << std::endl;
     loop();
-    cleanup();
 }
 
 void Application::update(const float dt) {
 
     // clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     GLint modelMatrixID = currentShader->getUniformLocation("modelMatrix");
     currentShader->use();
-    triangle.draw(modelMatrixID);
+
+    std::for_each(renderables.rbegin(), renderables.rend(), [modelMatrixID](Renderable & rend) {
+        rend.draw(modelMatrixID);
+    });
+
     // update other events like input handling
     glfwPollEvents();
     // put the stuff we’ve been drawing onto the display
@@ -186,7 +189,13 @@ void Application::loop() {
 
 }
 
-void Application::cleanup() {
+Application::~Application() {
     glfwDestroyWindow(window);
     glfwTerminate();
+}
+
+Application::Application() {
+    initGL();
+    initApplication();
+    renderables.emplace_back(std::vector<float>{0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f});
 }
