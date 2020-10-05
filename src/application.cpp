@@ -13,9 +13,39 @@ void Application::errorCallback(int error, const char * description) {
 }
 
 void Application::keyCallback(GLFWwindow * win, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_ESCAPE and action == GLFW_PRESS) {
         glfwSetWindowShouldClose(win, GL_TRUE);
     }
+
+    switch (key) {
+        case GLFW_KEY_W:
+            renderables.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            break;
+        case GLFW_KEY_S:
+            renderables.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            break;
+        case GLFW_KEY_A:
+            renderables.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            break;
+        case GLFW_KEY_D:
+            renderables.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            break;
+        case GLFW_KEY_Q:
+            renderables.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::left);
+            break;
+        case GLFW_KEY_E:
+            renderables.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::right);
+            break;
+        case GLFW_KEY_KP_ADD:
+            renderables.front().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::grow);
+            break;
+        case GLFW_KEY_KP_SUBTRACT:
+            renderables.front().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::shrink);
+            break;
+        default:
+            break;
+    }
+
     std::cout << "key_callback [" << key << "," << scancode << "," << action << "," << mods << "]" << std::endl;
 }
 
@@ -160,11 +190,12 @@ void Application::update(const float dt) {
     // clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    GLint modelMatrixID = currentShader->getUniformLocation("modelMatrix");
     currentShader->use();
 
-    std::for_each(renderables.rbegin(), renderables.rend(), [modelMatrixID](Renderable & rend) {
-        rend.draw(modelMatrixID);
+    std::for_each(renderables.rbegin(), renderables.rend(), [this, dt](Renderable & rend) {
+        rend.update(dt);
+        currentShader->passUniformLocation("modelMatrix", rend.transformation());
+        rend.draw();
     });
 
     // update other events like input handling

@@ -9,6 +9,8 @@
 #include <string>
 
 #include <GL/glew.h>
+#include <glm/mat4x4.hpp>
+
 
 class Shader {
 
@@ -24,13 +26,16 @@ class Shader {
     void compile(const std::string & vertex, const std::string & fragment);
     bool checkShader() const;
 
+    GLint getUniformLocation(const std::string & var) const;
+    GLint getUniformLocation(const char * var) const;
+
 public:
     Shader(const std::string & vertex, const std::string & fragment);
 
     void use() const;
 
-    GLint getUniformLocation(const std::string & var) const;
-    GLint getUniformLocation(const char * var) const;
+    void passUniformLocation(const std::string & var, const glm::mat4 & matrix) const;
+    void passUniformLocation(const char * var, const glm::mat4 & matrix) const;
 
 };
 

@@ -7,6 +7,9 @@
 #include <fstream>
 #include <sstream>
 
+#include <glm/gtc/type_ptr.hpp>
+
+
 std::string Shader::loadShader(const std::string & filename) {
 
     std::ifstream in(filename);
@@ -81,4 +84,13 @@ GLint Shader::getUniformLocation(const std::string & var) const {
 
 GLint Shader::getUniformLocation(const char * var) const {
     return glGetUniformLocation(shaderId, var);
+}
+
+void Shader::passUniformLocation(const std::string & var, const glm::mat4 & matrix) const {
+    passUniformLocation(var.c_str(), matrix);
+}
+
+void Shader::passUniformLocation(const char * var, const glm::mat4 & matrix) const {
+    auto model = getUniformLocation(var);
+    glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(matrix));
 }
