@@ -26,7 +26,7 @@ void Renderable::initVbo() {
 
     glGenBuffers(1, &vbo); // generate the VBO
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, points.size(), points.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(float), points.data(), GL_STATIC_DRAW);
 
 }
 
@@ -47,7 +47,7 @@ void Renderable::draw(const GLuint modelId) {
     glDrawArrays(GL_TRIANGLES, 0, 3); //mode,first,count
 }
 
-Renderable::Renderable(std::vector<float> && points) : transformation(1.f), vbo(0), vao(0), points(points) {
+Renderable::Renderable(std::vector<float> points) : points(std::move(points)) {
     initVbo();
     initVao();
 }

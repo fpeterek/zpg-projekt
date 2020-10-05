@@ -190,12 +190,18 @@ void Application::loop() {
 }
 
 Application::~Application() {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
 Application::Application() {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     initGL();
     initApplication();
-    renderables.emplace_back(std::vector<float>{0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f});
+    renderables.emplace_back(std::vector<float>{
+         0.0f,  0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f
+    });
 }

@@ -12,18 +12,18 @@
 
 class Renderable {
 
-    glm::mat4 transformation;
-    GLuint vbo;
-    GLuint vao;
+    glm::mat4 transformation{1.f};
+    GLuint vbo = 0;
+    GLuint vao = 0;
 
-    std::vector<float> points;
+    const std::vector<float> points;
 
     void initVbo();
     void initVao();
 
 public:
 
-    explicit Renderable(std::vector<float> && points);
+    explicit Renderable(std::vector<float> points);
 
     void draw(GLuint modelId);
 
