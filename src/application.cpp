@@ -18,22 +18,46 @@ void Application::keyCallback(GLFWwindow * win, int key, int scancode, int actio
     }
 
     switch (key) {
-        case GLFW_KEY_W:
+        case GLFW_KEY_I:
             renderables.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::up);
             break;
-        case GLFW_KEY_S:
+        case GLFW_KEY_K:
             renderables.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::down);
             break;
-        case GLFW_KEY_A:
+        case GLFW_KEY_J:
             renderables.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::left);
             break;
-        case GLFW_KEY_D:
+        case GLFW_KEY_L:
             renderables.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::right);
             break;
-        case GLFW_KEY_Q:
+        case GLFW_KEY_W:
+            camera->moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            break;
+        case GLFW_KEY_S:
+            camera->moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            break;
+        case GLFW_KEY_A:
+            camera->moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            break;
+        case GLFW_KEY_D:
+            camera->moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            break;
+        case GLFW_KEY_UP:
+            camera->rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            break;
+        case GLFW_KEY_DOWN:
+            camera->rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            break;
+        case GLFW_KEY_LEFT:
+            camera->rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            break;
+        case GLFW_KEY_RIGHT:
+            camera->rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            break;
+        case GLFW_KEY_U:
             renderables.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::left);
             break;
-        case GLFW_KEY_E:
+        case GLFW_KEY_O:
             renderables.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::right);
             break;
         case GLFW_KEY_KP_ADD:
@@ -46,29 +70,27 @@ void Application::keyCallback(GLFWwindow * win, int key, int scancode, int actio
             break;
     }
 
-    std::cout << "key_callback [" << key << "," << scancode << "," << action << "," << mods << "]" << std::endl;
+    // std::cout << "key_callback [" << key << "," << scancode << "," << action << "," << mods << "]" << std::endl;
 }
 
 void Application::windowFocusCallback(GLFWwindow * win, int focused) {
-    std::cout << "window_focus_callback" << std::endl;
+    // std::cout << "window_focus_callback" << std::endl;
 }
 
 void Application::windowIconifyCallback(GLFWwindow * win, int iconified) {
-    std::cout << "window_iconify_callback" << std::endl;
+    // std::cout << "window_iconify_callback" << std::endl;
 }
 
 void Application::windowSizeCallback(GLFWwindow * win, int width, int height) {
-    std::cout << "resize " << width << ", " << height << std::endl;
+    // std::cout << "resize " << width << ", " << height << std::endl;
     glViewport(0, 0, width, height);
 }
 
-void Application::cursorPosCallback(GLFWwindow * win, double x, double y) {
-    std::cout << "cursor_pos_callback" << std::endl;
-}
+void Application::cursorPosCallback(GLFWwindow * win, double x, double y) { }
 
 void Application::buttonCallback(GLFWwindow * win, int button, int action, int mode) {
     if (action == GLFW_PRESS) {
-        std::cout << "button_callback [" << button << "," << action << "," << mode << "]"<< std::endl;
+        // std::cout << "button_callback [" << button << "," << action << "," << mode << "]"<< std::endl;
     }
 }
 
@@ -132,7 +154,6 @@ void Application::initGLEW() {
 
 void Application::initShaders() {
     shaders.emplace_back("resources/shaders/shader.vert", "resources/shaders/shader.frag");
-    currentShader = *shaders.begin();
 }
 
 void Application::printInfo() {
@@ -190,11 +211,11 @@ void Application::update(const float dt) {
     // clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    currentShader->use();
+    camera->update(dt);
+    camera->apply();
 
     std::for_each(renderables.rbegin(), renderables.rend(), [this, dt](Renderable & rend) {
         rend.update(dt);
-        currentShader->passUniformLocation("modelMatrix", rend.transformation());
         rend.draw();
     });
 
@@ -208,6 +229,8 @@ void Application::update(const float dt) {
 void Application::loop() {
 
     lastTime = std::chrono::high_resolution_clock::now();
+
+    glClearColor(0.f, 0.f, 0.4f, 0.f);
 
     while (not glfwWindowShouldClose(window)) {
 
@@ -231,8 +254,9 @@ Application::Application() {
     initGL();
     initApplication();
     renderables.emplace_back(std::vector<float>{
-         0.0f,  0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f
-    });
+        -1.0f,  -1.0f, 0.0f, // top
+        1.0f, -1.0f, 0.0f, // right
+        0.0f, 1.0f, 0.0f  // left
+    }, shaders.front());
+    camera.emplace(shaders.front());
 }

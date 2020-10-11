@@ -11,6 +11,7 @@
 #include <GL/glew.h>
 
 #include "enums.hpp"
+#include "shader.hpp"
 
 class Renderable {
 
@@ -21,6 +22,8 @@ class Renderable {
     Growth growthDir = Growth::none;
     Rotation rotationDir = Rotation::none;
     glm::vec2 movementDir { 0.f, 0.f };
+
+    Shader & shader;
 
     float rotationV = 0;
     glm::vec2 forces { 0.f, 0.f };
@@ -51,7 +54,7 @@ class Renderable {
 
 public:
 
-    explicit Renderable(std::vector<float> points);
+    Renderable(std::vector<float> points, Shader & shader);
 
     void draw() const;
 

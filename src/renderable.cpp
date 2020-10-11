@@ -43,6 +43,8 @@ void Renderable::initVao() {
 }
 
 void Renderable::draw() const {
+    shader.use();
+    shader.passUniformLocation("modelMatrix", transform);
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
@@ -51,7 +53,7 @@ const glm::mat4 & Renderable::transformation() const {
     return transform;
 }
 
-Renderable::Renderable(std::vector<float> points) : points(std::move(points)) {
+Renderable::Renderable(std::vector<float> points, Shader & shader) : points(std::move(points)), shader(shader) {
     initVbo();
     initVao();
 }
