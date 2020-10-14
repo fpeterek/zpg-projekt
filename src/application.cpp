@@ -86,14 +86,6 @@ void Application::windowSizeCallback(GLFWwindow * win, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void Application::cursorPosCallback(GLFWwindow * win, double x, double y) { }
-
-void Application::buttonCallback(GLFWwindow * win, int button, int action, int mode) {
-    if (action == GLFW_PRESS) {
-        // std::cout << "button_callback [" << button << "," << action << "," << mode << "]"<< std::endl;
-    }
-}
-
 void Application::initCallbacks() {
 
     auto error = [](int error, const char * description) {
@@ -122,12 +114,24 @@ void Application::initCallbacks() {
     glfwSetWindowSizeCallback(window, size);
 
     auto cursor = [](GLFWwindow * win, double x, double y) {
-        application.cursorPosCallback(win, x, y);
+        application.mouse.mouseMove((int)x, (int)y);
     };
     glfwSetCursorPosCallback(window, cursor);
 
     auto mouseButton = [](GLFWwindow * win, int button, int action, int mode) {
-        application.buttonCallback(win, button, action, mode);
+        Mouse::Button btn = Mouse::Button::Other;
+        if (button == GLFW_MOUSE_BUTTON_1) {
+            btn = Mouse::Button::LB;
+        } else if (button == GLFW_MOUSE_BUTTON_2) {
+            btn = Mouse::Button::MB;
+        } else if (button == GLFW_MOUSE_BUTTON_3) {
+            btn = Mouse::Button::RB;
+        }
+        if (action == GLFW_PRESS) {
+            application.mouse.buttonPress(btn);
+        } else if (action == GLFW_RELEASE) {
+            application.mouse.buttonRelease(btn);
+        }
     };
     glfwSetMouseButtonCallback(window, mouseButton);
 

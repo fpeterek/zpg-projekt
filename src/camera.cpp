@@ -88,3 +88,24 @@ void Camera::calcTarget() {
     target = glm::vec3{ std::cos(fi), std::sin(psi), std::sin(fi) };
 }
 
+void Camera::onMouseMove(const MouseData & md) {
+
+    if (not md.lbPressed()) {
+        return;
+    }
+
+    std::cout << md.dx << ", " << md.dy << std::endl;
+
+    const float rad_x = md.dx / 180.f * M_PI;
+    const float rad_y = md.dy / 180.f * M_PI;
+
+    const float dFi = rad_x * dragSpeed;
+    const float dPsi = -1.f * rad_y * dragSpeed;
+
+    fi += dFi;
+    psi += dPsi;
+
+    capAngles();
+
+}
+

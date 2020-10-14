@@ -20,6 +20,7 @@
 #include "shader.hpp"
 #include "renderable.hpp"
 #include "camera.hpp"
+#include "mouse.hpp"
 
 class Application {
 
@@ -28,6 +29,8 @@ class Application {
     std::vector<Shader> shaders;
 
     std::optional<Camera> camera;
+
+    Mouse & mouse = Mouse::instance();
 
     int bufferWidth = 0;
     int bufferHeight = 0;
@@ -45,8 +48,6 @@ class Application {
     void windowFocusCallback(GLFWwindow * window, int focused);
     void windowIconifyCallback(GLFWwindow * window, int iconified);
     void windowSizeCallback(GLFWwindow * window, int width, int height);
-    void cursorPosCallback(GLFWwindow * window, double x, double y);
-    void buttonCallback(GLFWwindow * window, int button, int action, int mode);
 
     void initCallbacks();
 

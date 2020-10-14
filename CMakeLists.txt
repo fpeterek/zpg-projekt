@@ -13,4 +13,4 @@ add_executable(
         src/application.cpp
         src/shader.cpp
         src/renderable.cpp
-        include/camera.hpp src/camera.cpp)
+        include/camera.hpp src/camera.cpp include/mouse.hpp src/mouse.cpp)

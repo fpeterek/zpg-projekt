@@ -10,8 +10,10 @@
 
 #include "shader.hpp"
 #include "enums.hpp"
+#include "mouse.hpp"
 
-class Camera {
+
+class Camera : MouseObserver {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
     glm::vec3 eye { 0.f, 1.f, 3.f };
@@ -32,6 +34,7 @@ class Camera {
 
     static constexpr float moveSpeed = 3.f;
     static constexpr float rotationSpeed = 1.f;
+    static constexpr float dragSpeed = 0.3f;
 
     void updateCameraMatrix();
     void calcTarget();
@@ -52,6 +55,8 @@ public:
     void update(float dt);
 
     void apply();
+
+    void onMouseMove(const MouseData & md) override;
 };
 
 #endif //ZPG_PROJEKT_CAMERA_HPP
