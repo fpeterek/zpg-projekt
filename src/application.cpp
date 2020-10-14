@@ -218,7 +218,11 @@ void Application::update(const float dt) {
     camera->update(dt);
     camera->apply();
 
-    std::for_each(renderables.rbegin(), renderables.rend(), [this, dt](Renderable & rend) {
+    for (Shader & shader : shaders) {
+        shader.passUniformLocation()
+    }
+
+    std::for_each(renderables.rbegin(), renderables.rend(), [dt](Renderable & rend) {
         rend.update(dt);
         rend.draw();
     });

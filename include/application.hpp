@@ -25,12 +25,12 @@
 class Application {
 
     std::vector<Renderable> renderables;
-
     std::vector<Shader> shaders;
-
     std::optional<Camera> camera;
 
     Mouse & mouse = Mouse::instance();
+
+    glm::vec3 lightPos { 0.0, 1.0, 0.0 };
 
     int bufferWidth = 0;
     int bufferHeight = 0;
