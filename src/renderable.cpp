@@ -14,14 +14,17 @@
 
 void Renderable::rotate(float degree, const glm::vec3 axis) {
     transform = glm::rotate(transform, degree, axis);
+    onTransformChange();
 }
 
 void Renderable::translate(const glm::vec3 delta) {
     transform = glm::translate(transform, delta);
+    onTransformChange();
 }
 
 void Renderable::scale(const glm::vec3 scales) {
     transform = glm::scale(transform, scales);
+    onTransformChange();
 }
 
 void Renderable::initVbo() {
@@ -38,15 +41,19 @@ void Renderable::initVao() {
     glBindVertexArray(vao); //bind the VAO
     glEnableVertexAttribArray(0); //enable vertex attributes
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    using type = decltype(points)::value_type;
+    constexpr int typeSize = sizeof(type);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * typeSize, nullptr);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * typeSize, (GLvoid*)(3*sizeof(decltype(points)::value_type)));
 
 }
 
 void Renderable::draw() const {
     shader.use();
     shader.passUniformLocation("modelMatrix", transform);
+    shader.passUniformLocation("normalMatrix", normal);
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, points.size());
 }
 
 const glm::mat4 & Renderable::transformation() const {
@@ -56,6 +63,7 @@ const glm::mat4 & Renderable::transformation() const {
 Renderable::Renderable(std::vector<float> points, Shader & shader) : points(std::move(points)), shader(shader) {
     initVbo();
     initVao();
+    onTransformChange();
 }
 
 float Renderable::getAcc(Direction dir) {
@@ -138,5 +146,9 @@ void Renderable::update(const double dt) {
     updateGrowth(dt);
     updateRotation(dt);
     updateForces(dt);
+}
+
+void Renderable::onTransformChange() {
+    normal = glm::transpose(glm::inverse(transform));
 }
 

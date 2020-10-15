@@ -69,6 +69,8 @@ void Mouse::registerObserver(MouseObserver & observer) {
     observers.emplace_back(observer);
 }
 
+Mouse::Mouse() = default;
+
 MouseObserver::MouseObserver() {
     Mouse::instance().registerObserver(*this);
 }

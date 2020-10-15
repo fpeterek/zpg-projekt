@@ -50,7 +50,7 @@ class Mouse {
 
     typedef std::function<void(int, int, int, int)> callback;
 
-    void notifyObservers(const MouseData & md);
+    Mouse();
 
 public:
 

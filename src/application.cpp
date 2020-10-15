@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
-Application Application::application;
+#include "models.hpp"
+
+Application * Application::application = nullptr;
 
 void Application::errorCallback(int error, const char * description) {
     std::cerr << description << std::endl;
@@ -89,32 +91,32 @@ void Application::windowSizeCallback(GLFWwindow * win, int width, int height) {
 void Application::initCallbacks() {
 
     auto error = [](int error, const char * description) {
-        application.errorCallback(error, description);
+        instance().errorCallback(error, description);
     };
     glfwSetErrorCallback(error);
 
     auto key = [](GLFWwindow * win, int key, int scancode, int action, int mods) {
-        application.keyCallback(win, key, scancode, action, mods);
+        instance().keyCallback(win, key, scancode, action, mods);
     };
     glfwSetKeyCallback(window, key);
 
     auto focus = [](GLFWwindow * win, int focused) {
-        application.windowFocusCallback(win, focused);
+        instance().windowFocusCallback(win, focused);
     };
     glfwSetWindowFocusCallback(window, focus);
 
     auto iconify = [](GLFWwindow * win, int iconified) {
-        application.windowIconifyCallback(win, iconified);
+        instance().windowIconifyCallback(win, iconified);
     };
     glfwSetWindowIconifyCallback(window, iconify);
 
     auto size = [](GLFWwindow * win, int width, int length) {
-        application.windowSizeCallback(win, width, length);
+        instance().windowSizeCallback(win, width, length);
     };
     glfwSetWindowSizeCallback(window, size);
 
     auto cursor = [](GLFWwindow * win, double x, double y) {
-        application.mouse.mouseMove((int)x, (int)y);
+        instance().mouse.mouseMove((int)x, (int)y);
     };
     glfwSetCursorPosCallback(window, cursor);
 
@@ -128,9 +130,9 @@ void Application::initCallbacks() {
             btn = Mouse::Button::RB;
         }
         if (action == GLFW_PRESS) {
-            application.mouse.buttonPress(btn);
+            instance().mouse.buttonPress(btn);
         } else if (action == GLFW_RELEASE) {
-            application.mouse.buttonRelease(btn);
+            instance().mouse.buttonRelease(btn);
         }
     };
     glfwSetMouseButtonCallback(window, mouseButton);
@@ -178,7 +180,6 @@ void Application::initGLFW() {
     if (not glfwInit()) {
         throw std::runtime_error("ERROR: could not start GLFW3");
     }
-
     /*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -191,6 +192,7 @@ void Application::initGL() {
     initGLFWContext();
     initGLEW();
     initShaders();
+    glEnable(GL_DEPTH_TEST);
     printInfo();
 }
 
@@ -219,7 +221,7 @@ void Application::update(const float dt) {
     camera->apply();
 
     for (Shader & shader : shaders) {
-        shader.passUniformLocation()
+        shader.passUniformLocation("lightPosition", lightPos);
     }
 
     std::for_each(renderables.rbegin(), renderables.rend(), [dt](Renderable & rend) {
@@ -261,10 +263,13 @@ Application::Application() {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     initGL();
     initApplication();
-    renderables.emplace_back(std::vector<float>{
-        -1.0f,  -1.0f, 0.0f, // top
-        1.0f, -1.0f, 0.0f, // right
-        0.0f, 1.0f, 0.0f  // left
-    }, shaders.front());
+    renderables.emplace_back(models::suziFlat, shaders.front());
     camera.emplace(shaders.front());
+}
+
+Application & Application::instance() {
+    if (not application) {
+        application = new Application();
+    }
+    return *application;
 }
