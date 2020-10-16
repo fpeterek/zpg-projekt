@@ -94,8 +94,6 @@ void Camera::onMouseMove(const MouseData & md) {
         return;
     }
 
-    std::cout << md.dx << ", " << md.dy << std::endl;
-
     const float rad_x = md.dx / 180.f * M_PI;
     const float rad_y = md.dy / 180.f * M_PI;
 

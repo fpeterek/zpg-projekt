@@ -103,3 +103,12 @@ void Shader::passUniformLocation(const char * var, const glm::vec3 & vector) con
     const auto location = getUniformLocation(var);
     glProgramUniform3f(shaderId, location, vector.x, vector.y, vector.z);
 }
+
+void Shader::passUniformLocation(const std::string & var, const glm::mat3 & matrix) const {
+    passUniformLocation(var.c_str(), matrix);
+}
+
+void Shader::passUniformLocation(const char * var, const glm::mat3 & matrix) const {
+    const auto location = getUniformLocation(var);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}

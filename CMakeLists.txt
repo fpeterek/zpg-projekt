@@ -3,7 +3,7 @@ project(zpg_projekt)
 
 set(CMAKE_CXX_STANDARD 17)
 
-link_libraries(-lglfw -lglut -lGL -ldl -pthread)
+link_libraries(-lglfw -lglut -lGL -ldl -pthread -lGLEW)
 
 include_directories(/usr/include /usr/local/include include)
 

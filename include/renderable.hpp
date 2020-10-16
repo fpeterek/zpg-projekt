@@ -16,7 +16,6 @@
 class Renderable {
 
     glm::mat4 transform{1.f};
-    glm::mat4 normal{1.f};
     GLuint vbo = 0;
     GLuint vao = 0;
 
@@ -43,8 +42,6 @@ class Renderable {
 
     void initVbo();
     void initVao();
-
-    void onTransformChange();
 
     static float getAcc(Direction dir);
 

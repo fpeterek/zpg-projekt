@@ -48,9 +48,16 @@ class Mouse {
 
     std::vector<std::reference_wrapper<MouseObserver>> observers;
 
-    typedef std::function<void(int, int, int, int)> callback;
-
     Mouse();
+
+    enum class Action {
+        Press,
+        Release,
+        Move,
+        None
+    };
+
+    void notifyObservers(Action action, const MouseData & md);
 
 public:
 

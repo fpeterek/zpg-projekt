@@ -4,6 +4,7 @@
 
 #include "mouse.hpp"
 
+
 Mouse * Mouse::mouse = nullptr;
 
 bool MouseData::lbPressed() const {
@@ -27,9 +28,7 @@ void Mouse::buttonPress(const Button button) {
 
     const auto md = MouseData(x, y, 0, 0, pressed);
 
-    for (auto & obs : observers) {
-        obs.get().onButtonPress(md);
-    }
+    notifyObservers(Action::Press, md);
 }
 
 void Mouse::buttonRelease(const Button button) {
@@ -37,9 +36,7 @@ void Mouse::buttonRelease(const Button button) {
 
     const auto md = MouseData(x, y, 0, 0, pressed);
 
-    for (auto & obs : observers) {
-        obs.get().onButtonRelease(md);
-    }
+    notifyObservers(Action::Release, md);
 }
 
 Mouse & Mouse::instance() {
@@ -59,14 +56,23 @@ void Mouse::mouseMove(const int nx, const int ny) {
 
     const auto md = MouseData(x, y, dx, dy, pressed);
 
-    for (auto & obs : observers) {
-        obs.get().onMouseMove(md);
-    }
-
+    notifyObservers(Action::Move, md);
 }
 
 void Mouse::registerObserver(MouseObserver & observer) {
     observers.emplace_back(observer);
+}
+
+void Mouse::notifyObservers(const Mouse::Action action, const MouseData & md) {
+    for (auto & obs : observers) {
+        if (action == Action::Move) {
+            obs.get().onMouseMove(md);
+        } else if (action == Action::Press) {
+            obs.get().onButtonPress(md);
+        } else if (action == Action::Release) {
+            obs.get().onButtonRelease(md);
+        }
+    }
 }
 
 Mouse::Mouse() = default;
