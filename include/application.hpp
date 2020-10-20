@@ -29,7 +29,7 @@ class Application {
 
     Mouse & mouse = Mouse::instance();
 
-    glm::vec3 lightPos { 0.f, 1.f, 0.f };
+    glm::vec3 lightPos { 0.f, 0.f, 0.f };
 
     int bufferWidth = 0;
     int bufferHeight = 0;
