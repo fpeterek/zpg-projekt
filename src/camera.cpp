@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-Camera::Camera(Shader & shader) : shader(shader) {
+Camera::Camera() {
     updateCameraMatrix();
 }
 
@@ -15,10 +15,11 @@ void Camera::updateCameraMatrix() {
 }
 
 void Camera::apply() {
-    shader.passUniformLocation("viewMatrix", camera);
-    //shader.passUniformLocation("viewMatrix", glm::mat4(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f));
-    shader.passUniformLocation("projectionMatrix", projection);
-    //shader.passUniformLocation("projectionMatrix", glm::mat4(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f));
+
+    for (auto ref : observers) {
+        ref.get().updateView(camera);
+        ref.get().updateProjection(projection);
+    }
 }
 
 void Camera::moveSideways(Direction dir) {
@@ -47,6 +48,8 @@ void Camera::updateAngle(const float dt) {
 
     capAngles();
 
+    changeMade = changeMade or dFi or dPsi;
+
 }
 
 void Camera::updateForwardMovement(const float dt) {
@@ -62,6 +65,8 @@ void Camera::updateForwardMovement(const float dt) {
     eye.y += dy;
     eye.z += dz;
 
+    changeMade = changeMade or dx or dy or dz;
+
 }
 
 void Camera::update(const float dt) {
@@ -71,6 +76,10 @@ void Camera::update(const float dt) {
     calcTarget();
     updateCameraMatrix();
 
+    if (changeMade) {
+        apply();
+        changeMade = false;
+    }
 }
 
 void Camera::capAngles() {
@@ -105,5 +114,11 @@ void Camera::onMouseMove(const MouseData & md) {
 
     capAngles();
 
+    changeMade = dFi or dPsi;
+
+}
+
+void Camera::addObserver(CameraObserver & obs) {
+    observers.emplace_back(obs);
 }
 

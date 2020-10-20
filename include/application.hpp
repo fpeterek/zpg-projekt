@@ -25,12 +25,11 @@
 class Application {
 
     std::vector<Renderable> renderables;
-    std::vector<Shader> shaders;
     std::optional<Camera> camera;
 
     Mouse & mouse = Mouse::instance();
 
-    glm::vec3 lightPos { 5.0, 0.0, 1.0 };
+    glm::vec3 lightPos { 0.f, 1.f, 0.f };
 
     int bufferWidth = 0;
     int bufferHeight = 0;
@@ -57,7 +56,6 @@ class Application {
     void initWindow();
     void initGLFWContext();
     void initGLEW();
-    void initShaders();
 
     void initViewport();
 

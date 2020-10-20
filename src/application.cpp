@@ -158,10 +158,6 @@ void Application::initGLEW() {
     glewInit();
 }
 
-void Application::initShaders() {
-    shaders.emplace_back("resources/shaders/shader.vert", "resources/shaders/shader.frag");
-}
-
 void Application::printInfo() {
 
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
@@ -191,7 +187,6 @@ void Application::initGL() {
     initWindow();
     initGLFWContext();
     initGLEW();
-    initShaders();
     glEnable(GL_DEPTH_TEST);
     printInfo();
 }
@@ -214,24 +209,21 @@ void Application::run() {
 
 void Application::update(const float dt) {
 
-    // clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     camera->update(dt);
-    camera->apply();
+    // camera->apply();
 
-    for (Shader & shader : shaders) {
-        shader.passUniformLocation("lightPosition", lightPos);
-    }
+    ShaderManager::lambert().passUniformLocation("lightPosition", lightPos);
+    ShaderManager::phong().passUniformLocation("lightPosition", lightPos);
+    ShaderManager::blinn().passUniformLocation("lightPosition", lightPos);
 
-    std::for_each(renderables.rbegin(), renderables.rend(), [dt](Renderable & rend) {
+    for (Renderable & rend : renderables) {
         rend.update(dt);
         rend.draw();
-    });
+    }
 
-    // update other events like input handling
     glfwPollEvents();
-    // put the stuff we’ve been drawing onto the display
     glfwSwapBuffers(window);
 
 }
@@ -241,6 +233,9 @@ void Application::loop() {
     lastTime = std::chrono::high_resolution_clock::now();
 
     glClearColor(0.f, 0.f, 0.4f, 0.f);
+
+    update(0.f);
+    camera->apply();
 
     while (not glfwWindowShouldClose(window)) {
 
@@ -263,8 +258,21 @@ Application::Application() {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     initGL();
     initApplication();
-    renderables.emplace_back(models::suziFlat, shaders.front());
-    camera.emplace(shaders.front());
+
+    renderables.emplace_back(models::sphere, ShaderManager::lambert());
+    renderables.back().translate(glm::vec3(5.f, 0.f, 0.f));
+    renderables.emplace_back(models::sphere, ShaderManager::lambert());
+    renderables.back().translate(glm::vec3(-5.f, 0.f, 0.f));
+    renderables.emplace_back(models::sphere, ShaderManager::lambert());
+    renderables.back().translate(glm::vec3(0.f, 0.f, 5.f));
+    renderables.emplace_back(models::sphere, ShaderManager::lambert());
+    renderables.back().translate(glm::vec3(0.f, 0.f, -5.f));
+
+    camera.emplace();
+    camera->addObserver(ShaderManager::constant());
+    camera->addObserver(ShaderManager::lambert());
+    camera->addObserver(ShaderManager::phong());
+    camera->addObserver(ShaderManager::blinn());
 }
 
 Application & Application::instance() {

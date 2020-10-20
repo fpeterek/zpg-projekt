@@ -5,6 +5,9 @@
 #ifndef ZPG_PROJEKT_CAMERA_HPP
 #define ZPG_PROJEKT_CAMERA_HPP
 
+#include <functional>
+#include <vector>
+
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -20,6 +23,8 @@ class Camera : MouseObserver {
     glm::vec3 target { 0.f };
     glm::vec3 up { 0.f, 1.f, 0.f };
 
+    std::vector<std::reference_wrapper<CameraObserver>> observers;
+
     float fi = 1.5f * M_PI;
     float psi = 0.f;
 
@@ -28,9 +33,9 @@ class Camera : MouseObserver {
     int hRotate = 0;
     int vRotate = 0;
 
-    glm::mat4 camera;
+    bool changeMade = false;
 
-    Shader & shader;
+    glm::mat4 camera;
 
     static constexpr float moveSpeed = 3.f;
     static constexpr float rotationSpeed = 1.f;
@@ -45,7 +50,9 @@ class Camera : MouseObserver {
     void updateForwardMovement(float dt);
 
 public:
-    explicit Camera(Shader & shader);
+    Camera();
+
+    void addObserver(CameraObserver & obs);
 
     void moveSideways(Direction dir);
     void moveForward(Direction dir);

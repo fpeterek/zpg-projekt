@@ -112,3 +112,42 @@ void Shader::passUniformLocation(const char * var, const glm::mat3 & matrix) con
     const auto location = getUniformLocation(var);
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
+
+void Shader::updateView(const glm::mat4 & view) {
+    passUniformLocation("viewMatrix", view);
+}
+
+void Shader::updateProjection(const glm::mat4 & projection) {
+    passUniformLocation("projectionMatrix", projection);
+}
+
+ShaderManager & ShaderManager::instance() {
+    if (not sm) {
+        sm = new ShaderManager();
+    }
+    return *sm;
+}
+
+ShaderManager * ShaderManager::sm = nullptr;
+
+ShaderManager::ShaderManager() :
+    _constant("resources/shaders/shader.vert", "resources/shaders/constant.frag"),
+    _lambert("resources/shaders/shader.vert", "resources/shaders/lambert.frag"),
+    _phong("resources/shaders/shader.vert", "resources/shaders/phong.frag"),
+    _blinn("resources/shaders/shader.vert", "resources/shaders/blinn.frag") { }
+
+Shader & ShaderManager::constant() {
+    return instance()._constant;
+}
+
+Shader & ShaderManager::lambert() {
+    return instance()._lambert;
+}
+
+Shader & ShaderManager::phong() {
+    return instance()._phong;
+}
+
+Shader & ShaderManager::blinn() {
+    return instance()._blinn;
+}

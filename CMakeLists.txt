@@ -15,4 +15,4 @@ add_executable(
         src/renderable.cpp
         src/camera.cpp
         src/mouse.cpp
-        src/models.cpp)
+        src/models.cpp include/camera_observer.hpp)

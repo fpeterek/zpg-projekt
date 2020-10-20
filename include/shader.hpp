@@ -11,8 +11,9 @@
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 
+#include "camera_observer.hpp"
 
-class Shader {
+class Shader : public CameraObserver {
 
     GLuint vertexId;
     GLuint fragmentId;
@@ -41,6 +42,28 @@ public:
     void passUniformLocation(const std::string & var, const glm::vec3 & vector) const;
     void passUniformLocation(const char * var, const glm::vec3 & vector) const;
 
+    void updateView(const glm::mat4 & view) override;
+    void updateProjection(const glm::mat4 & projection) override;
+
+};
+
+class ShaderManager {
+
+    Shader _constant;
+    Shader _lambert;
+    Shader _phong;
+    Shader _blinn;
+
+    static ShaderManager * sm;
+    static ShaderManager & instance();
+
+    ShaderManager();
+
+public:
+    static Shader & constant();
+    static Shader & lambert();
+    static Shader & phong();
+    static Shader & blinn();
 };
 
 
