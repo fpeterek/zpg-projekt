@@ -13,5 +13,5 @@ layout(location=1) in vec3 normal;
 void main () {
     gl_Position = (projectionMatrix * viewMatrix * modelMatrix) * vec4(position, 1.0);
     ex_worldPosition = modelMatrix * vec4(position, 1.0f);
-    ex_worldNormal = transpose(inverse(mat3(modelMatrix))) * normal;
+    ex_worldNormal = normalize(transpose(inverse(mat3(modelMatrix))) * normal);
 }

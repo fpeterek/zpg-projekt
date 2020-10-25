@@ -83,7 +83,11 @@ GLint Shader::getUniformLocation(const std::string & var) const {
 }
 
 GLint Shader::getUniformLocation(const char * var) const {
-    return glGetUniformLocation(shaderId, var);
+    auto location = glGetUniformLocation(shaderId, var);
+    if (location < 0) {
+        // std::cout << "Uniform variable '" << var << "' not found." << std::endl;
+    }
+    return location;
 }
 
 void Shader::passUniformLocation(const std::string & var, const glm::mat4 & matrix) const {
@@ -92,7 +96,9 @@ void Shader::passUniformLocation(const std::string & var, const glm::mat4 & matr
 
 void Shader::passUniformLocation(const char * var, const glm::mat4 & matrix) const {
     const auto model = getUniformLocation(var);
-    glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(matrix));
+    if (model >= 0) {
+        glProgramUniformMatrix4fv(shaderId, model, 1, GL_FALSE, glm::value_ptr(matrix));
+    }
 }
 
 void Shader::passUniformLocation(const std::string & var, const glm::vec3 & vector) const {
@@ -101,7 +107,9 @@ void Shader::passUniformLocation(const std::string & var, const glm::vec3 & vect
 
 void Shader::passUniformLocation(const char * var, const glm::vec3 & vector) const {
     const auto location = getUniformLocation(var);
-    glProgramUniform3f(shaderId, location, vector.x, vector.y, vector.z);
+    if (location >= 0) {
+        glProgramUniform3f(shaderId, location, vector.x, vector.y, vector.z);
+    }
 }
 
 void Shader::passUniformLocation(const std::string & var, const glm::mat3 & matrix) const {
@@ -110,7 +118,9 @@ void Shader::passUniformLocation(const std::string & var, const glm::mat3 & matr
 
 void Shader::passUniformLocation(const char * var, const glm::mat3 & matrix) const {
     const auto location = getUniformLocation(var);
-    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+    if (location >= 0) {
+        glProgramUniformMatrix3fv(shaderId, location, 1, GL_FALSE, glm::value_ptr(matrix));
+    }
 }
 
 void Shader::updateView(const glm::mat4 & view) {
@@ -119,6 +129,22 @@ void Shader::updateView(const glm::mat4 & view) {
 
 void Shader::updateProjection(const glm::mat4 & projection) {
     passUniformLocation("projectionMatrix", projection);
+}
+
+void Shader::colorChanged(glm::vec3 color, LightType lightType) {
+    if (lightType == LightType::Ambient) {
+        passUniformLocation("ambientColor", color);
+    } else if (lightType == LightType::Default) {
+        passUniformLocation("lightColor", color);
+    }
+}
+
+void Shader::positionChanged(glm::vec3 position, LightType lightType) {
+    if (lightType == LightType::Ambient) {
+        /* noop -> ambient light has no coordinates */
+    } else if (lightType == LightType::Default) {
+        passUniformLocation("lightPosition", position);
+    }
 }
 
 ShaderManager & ShaderManager::instance() {

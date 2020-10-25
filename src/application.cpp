@@ -33,28 +33,28 @@ void Application::keyCallback(GLFWwindow * win, int key, int scancode, int actio
             renderables.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::right);
             break;
         case GLFW_KEY_W:
-            camera->moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            camera.moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::up);
             break;
         case GLFW_KEY_S:
-            camera->moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            camera.moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::down);
             break;
         case GLFW_KEY_A:
-            camera->moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            camera.moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::left);
             break;
         case GLFW_KEY_D:
-            camera->moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            camera.moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::right);
             break;
         case GLFW_KEY_UP:
-            camera->rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            camera.rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::up);
             break;
         case GLFW_KEY_DOWN:
-            camera->rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            camera.rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::down);
             break;
         case GLFW_KEY_LEFT:
-            camera->rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            camera.rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::left);
             break;
         case GLFW_KEY_RIGHT:
-            camera->rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            camera.rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::right);
             break;
         case GLFW_KEY_U:
             renderables.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::left);
@@ -211,12 +211,10 @@ void Application::update(const float dt) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    camera->update(dt);
+    camera.update(dt);
     // camera->apply();
-
-    ShaderManager::lambert().passUniformLocation("lightPosition", lightPos);
-    ShaderManager::phong().passUniformLocation("lightPosition", lightPos);
-    ShaderManager::blinn().passUniformLocation("lightPosition", lightPos);
+    ambientLight.apply();
+    light.apply();
 
     for (Renderable & rend : renderables) {
         rend.update(dt);
@@ -235,7 +233,9 @@ void Application::loop() {
     glClearColor(0.f, 0.f, 0.4f, 0.f);
 
     update(0.f);
-    camera->apply();
+    camera.apply();
+    ambientLight.apply();
+    light.apply();
 
     while (not glfwWindowShouldClose(window)) {
 
@@ -259,20 +259,31 @@ Application::Application() {
     initGL();
     initApplication();
 
-    renderables.emplace_back(models::sphere, ShaderManager::lambert());
+    Shader & shader = ShaderManager::phong();
+
+    renderables.emplace_back(models::sphere, shader);
     renderables.back().translate(glm::vec3(5.f, 0.f, 0.f));
-    renderables.emplace_back(models::sphere, ShaderManager::lambert());
+    renderables.emplace_back(models::sphere, shader);
     renderables.back().translate(glm::vec3(-5.f, 0.f, 0.f));
-    renderables.emplace_back(models::sphere, ShaderManager::lambert());
+    renderables.emplace_back(models::sphere, shader);
     renderables.back().translate(glm::vec3(0.f, 0.f, 5.f));
-    renderables.emplace_back(models::sphere, ShaderManager::lambert());
+    renderables.emplace_back(models::sphere, shader);
     renderables.back().translate(glm::vec3(0.f, 0.f, -5.f));
 
-    camera.emplace();
-    camera->addObserver(ShaderManager::constant());
-    camera->addObserver(ShaderManager::lambert());
-    camera->addObserver(ShaderManager::phong());
-    camera->addObserver(ShaderManager::blinn());
+    camera.addObserver(ShaderManager::constant());
+    camera.addObserver(ShaderManager::lambert());
+    camera.addObserver(ShaderManager::phong());
+    camera.addObserver(ShaderManager::blinn());
+
+    ambientLight.addObserver(ShaderManager::constant());
+    ambientLight.addObserver(ShaderManager::lambert());
+    ambientLight.addObserver(ShaderManager::phong());
+    ambientLight.addObserver(ShaderManager::blinn());
+
+    light.addObserver(ShaderManager::constant());
+    light.addObserver(ShaderManager::lambert());
+    light.addObserver(ShaderManager::phong());
+    light.addObserver(ShaderManager::blinn());
 }
 
 Application & Application::instance() {
