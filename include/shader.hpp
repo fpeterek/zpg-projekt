@@ -45,6 +45,7 @@ public:
 
     void updateView(const glm::mat4 & view) override;
     void updateProjection(const glm::mat4 & projection) override;
+    void updatePosition(const glm::vec3 & position) override;
 
     void colorChanged(glm::vec3 color, LightType lightType) override;
     void positionChanged(glm::vec3 position, LightType lightType) override;

@@ -19,13 +19,13 @@ void main () {
     vec3 viewVector = normalize(cameraPosition - worldPos);
     vec3 lightVector = normalize(lightPosition - worldPos);
     vec3 normalVector = normalize(ex_worldNormal);
-    vec3 reflectionVector = reflect(-lightVector, ex_worldNormal);
+    vec3 reflectionVector = reflect(-lightVector, normalVector);
 
     float dot_product = dot(lightVector, normalVector);
     vec3 diffuse = max(dot_product, 0.0) * vec3(0.92, 0.27, 0.19);
     // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
 
-    float specValue = pow(max(dot(viewVector, reflectionVector), 0.0), 4);
+    float specValue = pow(max(dot(viewVector, reflectionVector), 0.0), 16);
     vec3 specular = specularStrength * specValue * lightColor;
 
     if (dot_product < 0.0) {
@@ -34,3 +34,4 @@ void main () {
 
     out_color = vec4(ambientColor + specular + diffuse, 1.0);
 }
+

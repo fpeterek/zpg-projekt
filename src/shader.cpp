@@ -131,6 +131,10 @@ void Shader::updateProjection(const glm::mat4 & projection) {
     passUniformLocation("projectionMatrix", projection);
 }
 
+void Shader::updatePosition(const glm::vec3 & position) {
+    passUniformLocation("cameraPosition", position);
+}
+
 void Shader::colorChanged(glm::vec3 color, LightType lightType) {
     if (lightType == LightType::Ambient) {
         passUniformLocation("ambientColor", color);

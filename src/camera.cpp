@@ -19,6 +19,7 @@ void Camera::apply() {
     for (auto ref : observers) {
         ref.get().updateView(camera);
         ref.get().updateProjection(projection);
+        ref.get().updatePosition(eye);
     }
 }
 
