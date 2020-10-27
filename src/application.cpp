@@ -176,10 +176,10 @@ void Application::initGLFW() {
     if (not glfwInit()) {
         throw std::runtime_error("ERROR: could not start GLFW3");
     }
-    /*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 }
 void Application::initGL() {
@@ -261,13 +261,13 @@ Application::Application() {
 
     Shader & shader = ShaderManager::phong();
 
-    renderables.emplace_back(models::sphere, shader);
+    renderables.emplace_back(models::sphere, ShaderManager::constant());
     renderables.back().translate(glm::vec3(5.f, 0.f, 0.f));
-    renderables.emplace_back(models::sphere, shader);
+    renderables.emplace_back(models::sphere, ShaderManager::lambert());
     renderables.back().translate(glm::vec3(-5.f, 0.f, 0.f));
-    renderables.emplace_back(models::sphere, shader);
+    renderables.emplace_back(models::sphere, ShaderManager::phong());
     renderables.back().translate(glm::vec3(0.f, 0.f, 5.f));
-    renderables.emplace_back(models::sphere, shader);
+    renderables.emplace_back(models::sphere, ShaderManager::phong());
     renderables.back().translate(glm::vec3(0.f, 0.f, -5.f));
 
     camera.addObserver(ShaderManager::constant());
