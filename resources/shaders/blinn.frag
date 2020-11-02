@@ -1,6 +1,9 @@
 #version 400
 
 uniform vec3 lightPosition;
+uniform vec3 cameraPosition;
+uniform vec3 lightColor;
+uniform vec3 ambientColor;
 
 in vec4 ex_worldPosition;
 in vec3 ex_worldNormal;
@@ -8,15 +11,26 @@ in vec3 ex_worldNormal;
 out vec4 out_color;
 
 void main () {
-    vec3 lightVector = normalize(lightPosition);
-    vec3 normalVector = normalize(ex_worldNormal);
 
-    float dot_product = max(dot(lightVector, normalVector), 0.0);
-    vec4 diffuse = dot_product * vec4(0.92, 0.27, 0.19, 1.0);
+    const float specularStrength = 0.2;
+
+    vec3 worldPos = vec3(ex_worldPosition);
+
+    vec3 viewDir = normalize(cameraPosition - worldPos);
+    vec3 lightDir = normalize(lightPosition - worldPos);
+    vec3 normalVector = normalize(ex_worldNormal);
+    vec3 halfDir = normalize(lightDir + viewDir);
+
+    float dot_product = dot(lightDir, normalVector);
+    vec3 diffuse = max(dot_product, 0.0) * vec3(0.92, 0.27, 0.19);
     // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
 
-    vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0);
+    float specValue = pow(max(dot(halfDir, normalVector), 0.0), 16.0);
+    vec3 specular = specularStrength * specValue * lightColor;
 
-    out_color = ambient + diffuse;
-    // out_color = vec4(0.92, 0.27, 0.19, 1.0);
+    if (dot_product < 0.0) {
+        specular = vec3(0.0);
+    }
+
+    out_color = vec4(ambientColor + specular + diffuse, 1.0);
 }

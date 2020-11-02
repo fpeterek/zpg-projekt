@@ -16,16 +16,16 @@ void main () {
 
     vec3 worldPos = vec3(ex_worldPosition);
 
-    vec3 viewVector = normalize(cameraPosition - worldPos);
-    vec3 lightVector = normalize(lightPosition - worldPos);
+    vec3 viewDir = normalize(cameraPosition - worldPos);
+    vec3 lightDir = normalize(lightPosition - worldPos);
     vec3 normalVector = normalize(ex_worldNormal);
-    vec3 reflectionVector = reflect(-lightVector, normalVector);
+    vec3 reflectionDir = reflect(-lightDir, normalVector);
 
-    float dot_product = dot(lightVector, normalVector);
+    float dot_product = dot(lightDir, normalVector);
     vec3 diffuse = max(dot_product, 0.0) * vec3(0.92, 0.27, 0.19);
     // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
 
-    float specValue = pow(max(dot(viewVector, reflectionVector), 0.0), 16);
+    float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);
     vec3 specular = specularStrength * specValue * lightColor;
 
     if (dot_product < 0.0) {
