@@ -141,9 +141,28 @@ ObjectBuilder & ObjectBuilder::setPosition(glm::vec3 pos) {
     return *this;
 }
 
+ObjectBuilder & ObjectBuilder::setPosition(float x, float y, float z) {
+    return setPosition({x, y, z});
+}
+
 ObjectBuilder & ObjectBuilder::setScale(glm::vec3 s) {
     scales = s;
     return *this;
+}
+
+ObjectBuilder & ObjectBuilder::setScale(float x, float y, float z) {
+    return setScale({x, y, z});
+}
+
+void ObjectBuilder::reset() {
+
+    model = nullptr;
+    shader = nullptr;
+    degree = 0.f;
+
+    rotationAxis = glm::vec3 { 0.f };
+    position = glm::vec3 { 0.f };
+    scales = glm::vec3 { 1.f };
 }
 
 Object ObjectBuilder::build() {
@@ -161,23 +180,4 @@ Object ObjectBuilder::build() {
     reset();
 
     return obj;
-}
-
-void ObjectBuilder::reset() {
-
-    model = nullptr;
-    shader = nullptr;
-    degree = 0.f;
-
-    rotationAxis = glm::vec3 { 0.f };
-    position = glm::vec3 { 0.f };
-    scales = glm::vec3 { 1.f };
-}
-
-ObjectBuilder & ObjectBuilder::setPosition(float x, float y, float z) {
-    return setPosition({x, y, z});
-}
-
-ObjectBuilder & ObjectBuilder::setScale(float x, float y, float z) {
-    return setScale({x, y, z});
 }
