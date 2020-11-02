@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <exception>
 
 #include <glm/ext/matrix_transform.hpp>
 
@@ -114,3 +115,69 @@ void Object::update(const double dt) {
 
 Object::Object(const Model & model, Shader & shader) : model(model), shader(shader) { }
 
+ObjectBuilder & ObjectBuilder::setModel(const Model & newModel) {
+    model = &newModel;
+    return *this;
+}
+
+ObjectBuilder & ObjectBuilder::setShader(Shader & newShader) {
+    shader = &newShader;
+    return *this;
+}
+
+ObjectBuilder & ObjectBuilder::emplaceObject(const Model & model, Shader & shader) {
+    setModel(model);
+    return setShader(shader);
+}
+
+ObjectBuilder & ObjectBuilder::setRotation(float newDegree, glm::vec3 axis) {
+    degree = newDegree;
+    rotationAxis = axis;
+    return *this;
+}
+
+ObjectBuilder & ObjectBuilder::setPosition(glm::vec3 pos) {
+    position = pos;
+    return *this;
+}
+
+ObjectBuilder & ObjectBuilder::setScale(glm::vec3 s) {
+    scales = s;
+    return *this;
+}
+
+Object ObjectBuilder::build() {
+    if (not (model and shader)) {
+        throw std::runtime_error("ObjectBuilder error: Missing value '" + std::string(model ? "shader" : "model") + "'");
+    }
+
+    Object obj { *model, *shader };
+    obj.translate(position);
+    if (rotationAxis.x or rotationAxis.y or rotationAxis.z) {
+        obj.rotate(degree, rotationAxis);
+    }
+    obj.scale(scales);
+
+    reset();
+
+    return obj;
+}
+
+void ObjectBuilder::reset() {
+
+    model = nullptr;
+    shader = nullptr;
+    degree = 0.f;
+
+    rotationAxis = glm::vec3 { 0.f };
+    position = glm::vec3 { 0.f };
+    scales = glm::vec3 { 1.f };
+}
+
+ObjectBuilder & ObjectBuilder::setPosition(float x, float y, float z) {
+    return setPosition({x, y, z});
+}
+
+ObjectBuilder & ObjectBuilder::setScale(float x, float y, float z) {
+    return setScale({x, y, z});
+}

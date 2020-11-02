@@ -261,14 +261,23 @@ Application::Application() {
 
     Shader & shader = ShaderManager::phong();
 
-    renderables.emplace_back(models::sphere(), ShaderManager::constant());
-    renderables.back().translate(glm::vec3(5.f, 0.f, 0.f));
-    renderables.emplace_back(models::sphere(), ShaderManager::lambert());
-    renderables.back().translate(glm::vec3(-5.f, 0.f, 0.f));
-    renderables.emplace_back(models::sphere(), ShaderManager::phong());
-    renderables.back().translate(glm::vec3(0.f, 0.f, 5.f));
-    renderables.emplace_back(models::sphere(), ShaderManager::blinn());
-    renderables.back().translate(glm::vec3(0.f, 0.f, -5.f));
+    ObjectBuilder objBuilder;
+
+    renderables.emplace_back(
+        objBuilder.emplaceObject(models::sphere(), ShaderManager::constant()).setPosition(5.f, 0.f, 0.f).build()
+    );
+
+    renderables.emplace_back(
+        objBuilder.emplaceObject(models::sphere(), ShaderManager::lambert()).setPosition(-5.f, 0.f, 0.f).build()
+    );
+
+    renderables.emplace_back(
+        objBuilder.emplaceObject(models::sphere(), ShaderManager::phong()).setPosition(0.f, 0.f, 5.f).build()
+    );
+
+    renderables.emplace_back(
+        objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, 0.f, -5.f).build()
+    );
 
     camera.addObserver(ShaderManager::constant());
     camera.addObserver(ShaderManager::lambert());

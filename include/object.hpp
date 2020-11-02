@@ -71,4 +71,30 @@ public:
 
 };
 
+class ObjectBuilder {
+
+    const Model * model = nullptr;
+    Shader * shader = nullptr;
+
+    float degree = 0.f;
+    glm::vec3 rotationAxis { 0.f };
+    glm::vec3 position { 0.f };
+    glm::vec3 scales { 1.f };
+
+    void reset();
+
+public:
+    ObjectBuilder & setModel(const Model & model);
+    ObjectBuilder & setShader(Shader & shader);
+    ObjectBuilder & emplaceObject(const Model & model, Shader & shader);
+    ObjectBuilder & setRotation(float degree, glm::vec3 axis);
+    ObjectBuilder & setPosition(glm::vec3 position);
+    ObjectBuilder & setPosition(float x, float y, float z);
+    ObjectBuilder & setScale(glm::vec3 scales);
+    ObjectBuilder & setScale(float x, float y, float z);
+
+    Object build();
+
+};
+
 #endif //ZPG_PROJEKT_OBJECT_HPP
