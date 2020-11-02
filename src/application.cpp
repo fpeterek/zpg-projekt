@@ -259,8 +259,6 @@ Application::Application() {
     initGL();
     initApplication();
 
-    Shader & shader = ShaderManager::phong();
-
     ObjectBuilder objBuilder;
 
     renderables.emplace_back(
