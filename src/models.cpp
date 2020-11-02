@@ -2887,7 +2887,7 @@ namespace models {
 
     Model * spherePtr = nullptr;
 
-    const Model & sphere() {
+    Model & sphere() {
         if (not spherePtr) {
             spherePtr = new Model(spherePoints);
         }
@@ -5803,7 +5803,7 @@ namespace models {
 
     Model * suziFlatPtr = nullptr;
 
-    const Model & suziFlat() {
+    Model & suziFlat() {
         if (not suziFlatPtr) {
             suziFlatPtr = new Model(suziFlatPoints);
         }
@@ -8719,7 +8719,7 @@ namespace models {
 
     Model * suziSmoothPtr = nullptr;
 
-    const Model & suziSmooth() {
+    Model & suziSmooth() {
         if (not suziSmoothPtr) {
             suziSmoothPtr = new Model(suziSmoothPoints);
         }
@@ -8738,7 +8738,7 @@ namespace models {
 
     Model * plainPtr = nullptr;
 
-    const Model & plain() {
+    Model & plain() {
         if (not plainPtr) {
             plainPtr = new Model(plainPoints);
         }

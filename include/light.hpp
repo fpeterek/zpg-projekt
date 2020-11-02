@@ -24,39 +24,38 @@ class ColoredLight {
 
 protected:
 
-    glm::vec3 color { 1.f };
+    mutable glm::vec3 color { 1.f };
     std::vector<std::reference_wrapper<LightObserver>> observers;
 
-    void onColorChanged(LightType lightType);
+    void onColorChanged(LightType lightType) const;
 
 public:
     ColoredLight();
     ColoredLight(glm::vec3 color);
 
-    virtual void addColor(glm::vec3 delta);
-    virtual void setColor(glm::vec3 color);
+    virtual void addColor(glm::vec3 delta) const;
+    virtual void setColor(glm::vec3 color) const;
 
     virtual void addObserver(LightObserver & observer);
-    virtual void apply();
+    virtual void apply() const;
 
 };
 
 class PositionedLight : public ColoredLight {
-    glm::vec3 color { 1.f };
-    glm::vec3 position { 0.f };
+    mutable glm::vec3 position { 0.f };
 
-    void onPositionChanged(LightType lightType);
+    void onPositionChanged(LightType lightType) const;
 
 public:
     PositionedLight();
     PositionedLight(glm::vec3 color, glm::vec3 position);
 
-    void move(glm::vec3 delta);
-    void setPosition(glm::vec3 newPos);
+    void move(glm::vec3 delta) const;
+    void setPosition(glm::vec3 newPos) const;
 
-    void setColor(glm::vec3 color) override;
+    void setColor(glm::vec3 color) const override;
 
-    void apply() override;
+    void apply() const override;
 };
 
 typedef ColoredLight AmbientLight;

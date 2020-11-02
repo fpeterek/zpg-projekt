@@ -22,9 +22,9 @@ void Object::scale(const glm::vec3 scales) {
 }
 
 void Object::draw() const {
-    shader.use();
-    shader.passUniformLocation("modelMatrix", transform);
-    model.bindAndDraw();
+    shader.get().use();
+    shader.get().passUniformLocation("modelMatrix", transform);
+    model.get().bindAndDraw();
 }
 
 const glm::mat4 & Object::transformation() const {
@@ -113,48 +113,48 @@ void Object::update(const double dt) {
     updateForces(dt);
 }
 
-Object::Object(const Model & model, Shader & shader) : model(model), shader(shader) { }
+Object::Object(Model & model, Shader & shader) : model(model), shader(shader) { }
 
-ObjectBuilder & ObjectBuilder::setModel(const Model & newModel) {
+Object::Builder & Object::Builder::setModel(Model & newModel) {
     model = &newModel;
     return *this;
 }
 
-ObjectBuilder & ObjectBuilder::setShader(Shader & newShader) {
+Object::Builder & Object::Builder::setShader(Shader & newShader) {
     shader = &newShader;
     return *this;
 }
 
-ObjectBuilder & ObjectBuilder::emplaceObject(const Model & model, Shader & shader) {
+Object::Builder & Object::Builder::emplaceObject(Model & model, Shader & shader) {
     setModel(model);
     return setShader(shader);
 }
 
-ObjectBuilder & ObjectBuilder::setRotation(float newDegree, glm::vec3 axis) {
+Object::Builder & Object::Builder::setRotation(float newDegree, glm::vec3 axis) {
     degree = newDegree;
     rotationAxis = axis;
     return *this;
 }
 
-ObjectBuilder & ObjectBuilder::setPosition(glm::vec3 pos) {
+Object::Builder & Object::Builder::setPosition(glm::vec3 pos) {
     position = pos;
     return *this;
 }
 
-ObjectBuilder & ObjectBuilder::setPosition(float x, float y, float z) {
+Object::Builder & Object::Builder::setPosition(float x, float y, float z) {
     return setPosition({x, y, z});
 }
 
-ObjectBuilder & ObjectBuilder::setScale(glm::vec3 s) {
+Object::Builder & Object::Builder::setScale(glm::vec3 s) {
     scales = s;
     return *this;
 }
 
-ObjectBuilder & ObjectBuilder::setScale(float x, float y, float z) {
+Object::Builder & Object::Builder::setScale(float x, float y, float z) {
     return setScale({x, y, z});
 }
 
-void ObjectBuilder::reset() {
+void Object::Builder::reset() {
 
     model = nullptr;
     shader = nullptr;
@@ -165,7 +165,7 @@ void ObjectBuilder::reset() {
     scales = glm::vec3 { 1.f };
 }
 
-Object ObjectBuilder::build() {
+Object Object::Builder::build() {
     if (not (model and shader)) {
         throw std::runtime_error("ObjectBuilder error: Missing value '" + std::string(model ? "shader" : "model") + "'");
     }

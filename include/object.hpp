@@ -17,13 +17,13 @@
 class Object {
 
     glm::mat4 transform{1.f};
-    const Model & model;
+    std::reference_wrapper<Model> model;
 
     Growth growthDir = Growth::none;
     Rotation rotationDir = Rotation::none;
     glm::vec2 movementDir { 0.f, 0.f };
 
-    Shader & shader;
+    std::reference_wrapper<Shader> shader;
 
     float rotationV = 0;
     glm::vec2 forces { 0.f, 0.f };
@@ -49,7 +49,7 @@ class Object {
 
 public:
 
-    Object(const Model & model, Shader & shader);
+    Object(Model & model, Shader & shader);
 
     void draw() const;
 
@@ -69,31 +69,31 @@ public:
 
     void update(double dt);
 
-};
+    class Builder {
 
-class ObjectBuilder {
+        Model * model = nullptr;
+        Shader * shader = nullptr;
 
-    const Model * model = nullptr;
-    Shader * shader = nullptr;
+        float degree = 0.f;
+        glm::vec3 rotationAxis { 0.f };
+        glm::vec3 position { 0.f };
+        glm::vec3 scales { 1.f };
 
-    float degree = 0.f;
-    glm::vec3 rotationAxis { 0.f };
-    glm::vec3 position { 0.f };
-    glm::vec3 scales { 1.f };
+        void reset();
 
-    void reset();
+    public:
+        Builder & setModel(Model & model);
+        Builder & setShader(Shader & shader);
+        Builder & emplaceObject(Model & model, Shader & shader);
+        Builder & setRotation(float degree, glm::vec3 axis);
+        Builder & setPosition(glm::vec3 position);
+        Builder & setPosition(float x, float y, float z);
+        Builder & setScale(glm::vec3 scales);
+        Builder & setScale(float x, float y, float z);
 
-public:
-    ObjectBuilder & setModel(const Model & model);
-    ObjectBuilder & setShader(Shader & shader);
-    ObjectBuilder & emplaceObject(const Model & model, Shader & shader);
-    ObjectBuilder & setRotation(float degree, glm::vec3 axis);
-    ObjectBuilder & setPosition(glm::vec3 position);
-    ObjectBuilder & setPosition(float x, float y, float z);
-    ObjectBuilder & setScale(glm::vec3 scales);
-    ObjectBuilder & setScale(float x, float y, float z);
+        Object build();
 
-    Object build();
+    };
 
 };
 

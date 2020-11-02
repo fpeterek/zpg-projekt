@@ -22,16 +22,14 @@
 #include "camera.hpp"
 #include "mouse.hpp"
 #include "light.hpp"
+#include "scene.hpp"
 
 class Application {
 
-    std::vector<Object> renderables;
-    Camera camera;
-
     Mouse & mouse = Mouse::instance();
 
-    AmbientLight ambientLight { glm::vec3 { 0.1f } };
-    PositionedLight light { glm::vec3 { 1.f }, glm::vec3 { 0.f } };
+    Scene * scenePtr = nullptr;
+    Scene & scene();
 
     int bufferWidth = 0;
     int bufferHeight = 0;

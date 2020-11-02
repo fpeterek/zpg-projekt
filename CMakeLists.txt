@@ -18,4 +18,5 @@ add_executable(
         src/models.cpp
         src/light.cpp
         src/model.cpp
+        src/scene.cpp
 )

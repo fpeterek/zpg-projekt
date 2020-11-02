@@ -10,10 +10,10 @@
 #include "model.hpp"
 
 namespace models {
-    const Model & plain();
-    const Model & sphere();
-    const Model & suziFlat();
-    const Model & suziSmooth();
+    Model & plain();
+    Model & sphere();
+    Model & suziFlat();
+    Model & suziSmooth();
 }
 
 #endif //ZPG_PROJEKT_MODELS_HPP

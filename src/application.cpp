@@ -19,54 +19,58 @@ void Application::keyCallback(GLFWwindow * win, int key, int scancode, int actio
         glfwSetWindowShouldClose(win, GL_TRUE);
     }
 
+    if (not scenePtr) {
+        return;
+    }
+
     switch (key) {
         case GLFW_KEY_I:
-            renderables.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            scene().objects.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::up);
             break;
         case GLFW_KEY_K:
-            renderables.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            scene().objects.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::down);
             break;
         case GLFW_KEY_J:
-            renderables.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            scene().objects.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::left);
             break;
         case GLFW_KEY_L:
-            renderables.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            scene().objects.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::right);
             break;
         case GLFW_KEY_W:
-            camera.moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            scene().camera.moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::up);
             break;
         case GLFW_KEY_S:
-            camera.moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            scene().camera.moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::down);
             break;
         case GLFW_KEY_A:
-            camera.moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            scene().camera.moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::left);
             break;
         case GLFW_KEY_D:
-            camera.moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            scene().camera.moveSideways((action == GLFW_RELEASE) ? Direction::none : Direction::right);
             break;
         case GLFW_KEY_UP:
-            camera.rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            scene().camera.rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::up);
             break;
         case GLFW_KEY_DOWN:
-            camera.rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            scene().camera.rotateVer((action == GLFW_RELEASE) ? Direction::none : Direction::down);
             break;
         case GLFW_KEY_LEFT:
-            camera.rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            scene().camera.rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::left);
             break;
         case GLFW_KEY_RIGHT:
-            camera.rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            scene().camera.rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::right);
             break;
         case GLFW_KEY_U:
-            renderables.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::left);
+            scene().objects.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::left);
             break;
         case GLFW_KEY_O:
-            renderables.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::right);
+            scene().objects.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::right);
             break;
         case GLFW_KEY_KP_ADD:
-            renderables.front().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::grow);
+            scene().objects.front().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::grow);
             break;
         case GLFW_KEY_KP_SUBTRACT:
-            renderables.front().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::shrink);
+            scene().objects.front().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::shrink);
             break;
         default:
             break;
@@ -211,15 +215,7 @@ void Application::update(const float dt) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    camera.update(dt);
-    // camera->apply();
-    ambientLight.apply();
-    light.apply();
-
-    for (Object & rend : renderables) {
-        rend.update(dt);
-        rend.draw();
-    }
+    scene().update(dt);
 
     glfwPollEvents();
     glfwSwapBuffers(window);
@@ -231,11 +227,6 @@ void Application::loop() {
     lastTime = std::chrono::high_resolution_clock::now();
 
     glClearColor(0.f, 0.f, 0.4f, 0.f);
-
-    update(0.f);
-    camera.apply();
-    ambientLight.apply();
-    light.apply();
 
     while (not glfwWindowShouldClose(window)) {
 
@@ -259,38 +250,26 @@ Application::Application() {
     initGL();
     initApplication();
 
-    ObjectBuilder objBuilder;
+    Object::Builder objBuilder;
+    Scene::Builder sceneBuilder;
 
-    renderables.emplace_back(
-        objBuilder.emplaceObject(models::sphere(), ShaderManager::constant()).setPosition(5.f, 0.f, 0.f).build()
-    );
+    scenePtr = sceneBuilder
+        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f })
+        .emplaceAmbientLight(glm::vec3 { .1f })
+        .addObject(
+            objBuilder.emplaceObject(models::sphere(), ShaderManager::constant()).setPosition(5.f, 0.f, 0.f).build()
+        )
+        .addObject(
+            objBuilder.emplaceObject(models::sphere(), ShaderManager::lambert()).setPosition(-5.f, 0.f, 0.f).build()
+        )
+        .addObject(
+            objBuilder.emplaceObject(models::sphere(), ShaderManager::phong()).setPosition(0.f, 0.f, 5.f).build()
+        )
+        .addObject(
+            objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, 0.f, -5.f).build()
+        )
+        .build();
 
-    renderables.emplace_back(
-        objBuilder.emplaceObject(models::sphere(), ShaderManager::lambert()).setPosition(-5.f, 0.f, 0.f).build()
-    );
-
-    renderables.emplace_back(
-        objBuilder.emplaceObject(models::sphere(), ShaderManager::phong()).setPosition(0.f, 0.f, 5.f).build()
-    );
-
-    renderables.emplace_back(
-        objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, 0.f, -5.f).build()
-    );
-
-    camera.addObserver(ShaderManager::constant());
-    camera.addObserver(ShaderManager::lambert());
-    camera.addObserver(ShaderManager::phong());
-    camera.addObserver(ShaderManager::blinn());
-
-    ambientLight.addObserver(ShaderManager::constant());
-    ambientLight.addObserver(ShaderManager::lambert());
-    ambientLight.addObserver(ShaderManager::phong());
-    ambientLight.addObserver(ShaderManager::blinn());
-
-    light.addObserver(ShaderManager::constant());
-    light.addObserver(ShaderManager::lambert());
-    light.addObserver(ShaderManager::phong());
-    light.addObserver(ShaderManager::blinn());
 }
 
 Application & Application::instance() {
@@ -298,4 +277,8 @@ Application & Application::instance() {
         application = new Application();
     }
     return *application;
+}
+
+Scene & Application::scene() {
+    return *scenePtr;
 }
