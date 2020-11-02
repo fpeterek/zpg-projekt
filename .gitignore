@@ -5,4 +5,5 @@ build/
 *.swp
 *.o
 cmake-build-debug
+zpg
 

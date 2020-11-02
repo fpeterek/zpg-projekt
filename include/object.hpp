@@ -2,22 +2,22 @@
 // Created by fpeterek on 30.09.20.
 //
 
-#ifndef ZPG_PROJEKT_RENDERABLE_HPP
-#define ZPG_PROJEKT_RENDERABLE_HPP
+#ifndef ZPG_PROJEKT_OBJECT_HPP
+#define ZPG_PROJEKT_OBJECT_HPP
 
 #include <vector>
 
 #include <glm/mat4x4.hpp>
 #include <GL/glew.h>
 
+#include "model.hpp"
 #include "enums.hpp"
 #include "shader.hpp"
 
-class Renderable {
+class Object {
 
     glm::mat4 transform{1.f};
-    GLuint vbo = 0;
-    GLuint vao = 0;
+    const Model & model;
 
     Growth growthDir = Growth::none;
     Rotation rotationDir = Rotation::none;
@@ -38,11 +38,6 @@ class Renderable {
     static constexpr float deceleration = 0.5;
     static constexpr float maxV = 10.0;
 
-    const std::vector<float> points;
-
-    void initVbo();
-    void initVao();
-
     static float getAcc(Direction dir);
 
     static float calcNewV(float current, float acc, float dec);
@@ -54,7 +49,7 @@ class Renderable {
 
 public:
 
-    Renderable(std::vector<float> points, Shader & shader);
+    Object(const Model & model, Shader & shader);
 
     void draw() const;
 
@@ -76,4 +71,4 @@ public:
 
 };
 
-#endif //ZPG_PROJEKT_RENDERABLE_HPP
+#endif //ZPG_PROJEKT_OBJECT_HPP

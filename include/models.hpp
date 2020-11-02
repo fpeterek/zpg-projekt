@@ -7,11 +7,13 @@
 
 #include <vector>
 
+#include "model.hpp"
+
 namespace models {
-    extern const std::vector<float> plain;
-    extern const std::vector<float> sphere;
-    extern const std::vector<float> suziFlat;
-    extern const std::vector<float> suziSmooth;
+    const Model & plain();
+    const Model & sphere();
+    const Model & suziFlat();
+    const Model & suziSmooth();
 }
 
 #endif //ZPG_PROJEKT_MODELS_HPP

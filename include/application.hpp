@@ -18,14 +18,14 @@
 #include <GLFW/glfw3.h>
 
 #include "shader.hpp"
-#include "renderable.hpp"
+#include "object.hpp"
 #include "camera.hpp"
 #include "mouse.hpp"
 #include "light.hpp"
 
 class Application {
 
-    std::vector<Renderable> renderables;
+    std::vector<Object> renderables;
     Camera camera;
 
     Mouse & mouse = Mouse::instance();

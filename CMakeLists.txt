@@ -12,9 +12,10 @@ add_executable(
         src/main.cpp
         src/application.cpp
         src/shader.cpp
-        src/renderable.cpp
+        src/object.cpp
         src/camera.cpp
         src/mouse.cpp
         src/models.cpp
         src/light.cpp
+        src/model.cpp
 )

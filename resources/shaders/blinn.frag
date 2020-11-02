@@ -12,7 +12,7 @@ out vec4 out_color;
 
 void main () {
 
-    const float specularStrength = 0.2;
+    const float specularStrength = 0.4;
 
     vec3 worldPos = vec3(ex_worldPosition);
 

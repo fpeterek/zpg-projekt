@@ -2,7 +2,7 @@
 
 namespace models {
 
-    const std::vector<float> sphere {
+    const std::vector<float> spherePoints {
         -0.831470, -0.555570, 0.000000, -0.833338, -0.552751, 0.000000,
         -0.923880, -0.382683, 0.000000, -0.924741, -0.380535, 0.000000,
         -0.815493, -0.555570, -0.162212, -0.817316, -0.552751, -0.162572,
@@ -2885,7 +2885,16 @@ namespace models {
         -0.555570, -0.831470, 0.000000, -0.559771, -0.828639, 0.000000
     };
 
-    const std::vector<float> suziFlat {
+    Model * spherePtr = nullptr;
+
+    const Model & sphere() {
+        if (not spherePtr) {
+            spherePtr = new Model(spherePoints);
+        }
+        return *spherePtr;
+    }
+
+    const std::vector<float> suziFlatPoints {
         0.468750, 0.242187, 0.757812, 0.663036, -0.192883, 0.723312,
         0.437500, 0.164062, 0.765625, 0.663036, -0.192883, 0.723312,
         0.562500, 0.242187, 0.671875, 0.663036, -0.192883, 0.723312,
@@ -5792,7 +5801,16 @@ namespace models {
         -0.773438, -0.140625, -0.125000, -0.007891, -0.915403, -0.402462,
     };
 
-    const std::vector<float> suziSmooth {
+    Model * suziFlatPtr = nullptr;
+
+    const Model & suziFlat() {
+        if (not suziFlatPtr) {
+            suziFlatPtr = new Model(suziFlatPoints);
+        }
+        return *spherePtr;
+    }
+
+    const std::vector<float> suziSmoothPoints {
         0.468750, 0.242187, 0.757812, 0.970580, -0.015168, 0.240181,
         0.437500, 0.164062, 0.765625, 0.711631, -0.679250, 0.179327,
         0.562500, 0.242187, 0.671875, 0.801782, -0.000977, 0.597583,
@@ -8699,7 +8717,16 @@ namespace models {
         -0.773438, -0.140625, -0.125000, 0.021424, -0.683279, 0.729820,
     };
 
-    const std::vector<float> plain {
+    Model * suziSmoothPtr = nullptr;
+
+    const Model & suziSmooth() {
+        if (not suziSmoothPtr) {
+            suziSmoothPtr = new Model(suziSmoothPoints);
+        }
+        return *suziSmoothPtr;
+    }
+
+    const std::vector<float> plainPoints {
         1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
         1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
         -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
@@ -8708,5 +8735,14 @@ namespace models {
         1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
         -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f
     };
+
+    Model * plainPtr = nullptr;
+
+    const Model & plain() {
+        if (not plainPtr) {
+            plainPtr = new Model(plainPoints);
+        }
+        return *plainPtr;
+    }
 
 }
