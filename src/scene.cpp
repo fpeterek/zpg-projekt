@@ -29,26 +29,18 @@ void Scene::addAll(const std::vector<Object> & vector) {
     }
 }
 
-Scene::Scene(std::vector<Object> objects, AmbientLight ambientLight, PositionedLight posLight, Camera camera) :
+Scene::Scene(std::vector<Object> objects, AmbientLight ambientLight, PositionedLight posLight, glm::vec3 cameraPos) :
     objects(std::move(objects)), ambientLight(std::move(ambientLight)),
-    light(std::move(posLight)), camera(std::move(camera)) {
+    light(std::move(posLight)) {
     init();
+    camera.setPosition(cameraPos);
 }
 
 void Scene::Builder::reset() {
     objects = { };
     emplaceAmbientLight({ 0.1f, 0.1f, 0.1f });
     emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f } );
-    emplaceCamera();
-}
-
-Scene::Builder & Scene::Builder::emplaceCamera() {
-    camera = Camera();
-    camera.addObserver(ShaderManager::constant());
-    camera.addObserver(ShaderManager::lambert());
-    camera.addObserver(ShaderManager::phong());
-    camera.addObserver(ShaderManager::blinn());
-    return *this;
+    cameraPos = { 0.f, 0.f, 0.f };
 }
 
 Scene::Builder & Scene::Builder::addAll(const std::vector<Object> & vector) {
@@ -82,11 +74,27 @@ Scene::Builder & Scene::Builder::emplaceAmbientLight(glm::vec3 color) {
 }
 
 Scene * Scene::Builder::build() {
-    Scene * scene = new Scene { std::move(objects), ambientLight, light, camera };
+    Scene * scene = new Scene { std::move(objects), ambientLight, light, cameraPos };
+
+    scene->camera.addObserver(ShaderManager::constant());
+    scene->camera.addObserver(ShaderManager::lambert());
+    scene->camera.addObserver(ShaderManager::phong());
+    scene->camera.addObserver(ShaderManager::blinn());
+
     reset();
     return scene;
 }
 
 Scene::Builder::Builder() {
     reset();
+}
+
+Scene::Builder & Scene::Builder::setCameraPosition(glm::vec3 position) {
+    cameraPos = position;
+    return *this;
+}
+
+Scene::Builder & Scene::Builder::setCameraPosition(float x, float y, float z) {
+    cameraPos = { x, y ,z };
+    return *this;
 }

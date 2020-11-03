@@ -186,6 +186,7 @@ void Application::initGLFW() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 
 }
+
 void Application::initGL() {
     initGLFW();
     initWindow();
@@ -228,6 +229,9 @@ void Application::loop() {
 
     glClearColor(0.f, 0.f, 0.4f, 0.f);
 
+    update(0.0);
+    scene().init();
+
     while (not glfwWindowShouldClose(window)) {
 
         const TimePoint now = std::chrono::high_resolution_clock::now();
@@ -268,6 +272,13 @@ Application::Application() {
         .addObject(
             objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, 0.f, -5.f).build()
         )
+        .addObject(
+            objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, 5.f, 0.f).build()
+        )
+        .addObject(
+            objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, -5.f, 0.f).build()
+        )
+        .setCameraPosition(0.f, 1.f, 3.f)
         .build();
 
 }
@@ -280,5 +291,8 @@ Application & Application::instance() {
 }
 
 Scene & Application::scene() {
+    if (not scenePtr) {
+        throw std::runtime_error("Application: Scene is not initialized");
+    }
     return *scenePtr;
 }

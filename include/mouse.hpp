@@ -31,6 +31,7 @@ class MouseObserver {
 public:
 
     MouseObserver();
+    ~MouseObserver();
 
     virtual void onButtonPress(const MouseData & mouseData);
     virtual void onButtonRelease(const MouseData & mouseData);
@@ -69,6 +70,7 @@ public:
     };
 
     void registerObserver(MouseObserver & observer);
+    void removeObserver(MouseObserver & observer);
 
     void buttonPress(Button button);
     void buttonRelease(Button button);

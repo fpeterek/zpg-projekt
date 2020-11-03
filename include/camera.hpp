@@ -54,6 +54,8 @@ public:
 
     void addObserver(CameraObserver & obs);
 
+    void setPosition(glm::vec3 pos);
+
     void moveSideways(Direction dir);
     void moveForward(Direction dir);
     void rotateHor(Direction dir);

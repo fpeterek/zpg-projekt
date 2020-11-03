@@ -4,6 +4,7 @@
 
 #include "mouse.hpp"
 
+#include <algorithm>
 
 Mouse * Mouse::mouse = nullptr;
 
@@ -75,6 +76,17 @@ void Mouse::notifyObservers(const Mouse::Action action, const MouseData & md) {
     }
 }
 
+void Mouse::removeObserver(MouseObserver & observer) {
+
+    for (auto it = observers.begin(); it != observers.end(); ++it) {
+        if (&(it->get()) == &observer) {
+            observers.erase(it);
+            return;
+        }
+    }
+
+}
+
 Mouse::Mouse() = default;
 
 MouseObserver::MouseObserver() {
@@ -92,3 +104,8 @@ void MouseObserver::onButtonRelease(const MouseData & mouseData) {
 void MouseObserver::onMouseMove(const MouseData & mouseData) {
     // By default do nothing
 }
+
+MouseObserver::~MouseObserver() {
+    Mouse::instance().removeObserver(*this);
+}
+

@@ -123,3 +123,10 @@ void Camera::addObserver(CameraObserver & obs) {
     observers.emplace_back(obs);
 }
 
+void Camera::setPosition(glm::vec3 pos) {
+    eye = pos;
+    calcTarget();
+    updateCameraMatrix();
+    apply();
+}
+

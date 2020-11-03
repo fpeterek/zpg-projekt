@@ -14,7 +14,7 @@
 
 class Scene {
 
-    Scene(std::vector<Object> objects, AmbientLight ambientLight, PositionedLight light, Camera camera);
+    Scene(std::vector<Object> objects, AmbientLight ambientLight, PositionedLight light, glm::vec3 cameraPos);
 
 public:
 
@@ -39,8 +39,7 @@ public:
         std::vector<Object> objects;
         AmbientLight ambientLight;
         PositionedLight light;
-
-        Camera camera;
+        glm::vec3 cameraPos;
 
         void reset();
 
@@ -50,7 +49,8 @@ public:
 
         Builder & emplaceLight(glm::vec3 color, glm::vec3 position);
         Builder & emplaceAmbientLight(glm::vec3 color);
-        Builder & emplaceCamera();
+        Builder & setCameraPosition(glm::vec3 position);
+        Builder & setCameraPosition(float x, float y, float z);
 
         Builder & addAll(const std::vector<Object> & objects);
         Builder & addObject(const Object & object);

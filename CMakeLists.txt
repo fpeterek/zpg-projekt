@@ -20,3 +20,5 @@ add_executable(
         src/model.cpp
         src/scene.cpp
 )
+
+file(COPY resources DESTINATION .)
