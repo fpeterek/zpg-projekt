@@ -34,6 +34,8 @@ public:
     void addAll(const std::vector<Object> & objects);
     void addObject(const Object & object);
 
+    size_t indexOf(unsigned int objectId);
+
     class Builder {
 
         std::vector<Object> objects;

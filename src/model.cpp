@@ -28,7 +28,8 @@ void Model::initVao() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * typeSize, (GLvoid*)(3*typeSize));
 }
 
-void Model::bindAndDraw() const {
+void Model::bindAndDraw(const unsigned int id) const {
+    glStencilFunc(GL_ALWAYS, id, 0xFF);
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, points.size());
 }

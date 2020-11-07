@@ -24,12 +24,14 @@
 #include "light.hpp"
 #include "scene.hpp"
 
-class Application {
+class Application : MouseObserver {
 
     Mouse & mouse = Mouse::instance();
 
     Scene * scenePtr = nullptr;
     Scene & scene();
+
+    size_t selected = noneSelected;
 
     int bufferWidth = 0;
     int bufferHeight = 0;
@@ -47,6 +49,14 @@ class Application {
     void windowFocusCallback(GLFWwindow * window, int focused);
     void windowIconifyCallback(GLFWwindow * window, int iconified);
     void windowSizeCallback(GLFWwindow * window, int width, int height);
+
+    void deselect();
+    void selectObject(int mouseX, int mouseY);
+
+    bool hasSelected();
+    Object & getSelected();
+
+    void onButtonPress(const MouseData & mouseData) override;
 
     void initCallbacks();
 
@@ -68,6 +78,8 @@ class Application {
     Application();
 
     static Application * application;
+
+    static constexpr size_t noneSelected = std::numeric_limits<std::size_t>::max();
 
 public:
 

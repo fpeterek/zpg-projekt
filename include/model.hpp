@@ -26,7 +26,7 @@ class Model {
 public:
 
     Model(std::vector<float> points);
-    void bindAndDraw() const;
+    void bindAndDraw(unsigned int id) const;
 
 
 };

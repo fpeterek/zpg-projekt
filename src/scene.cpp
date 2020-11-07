@@ -36,6 +36,15 @@ Scene::Scene(std::vector<Object> objects, AmbientLight ambientLight, PositionedL
     camera.setPosition(cameraPos);
 }
 
+size_t Scene::indexOf(unsigned int objectId) {
+    for (size_t i = 0; i < objects.size(); ++i) {
+        if (objects[i].objectId() == objectId) {
+            return i;
+        }
+    }
+    return std::numeric_limits<size_t>::max();
+}
+
 void Scene::Builder::reset() {
     objects = { };
     emplaceAmbientLight({ 0.1f, 0.1f, 0.1f });

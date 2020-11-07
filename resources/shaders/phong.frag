@@ -4,6 +4,7 @@ uniform vec3 lightPosition;
 uniform vec3 cameraPosition;
 uniform vec3 lightColor;
 uniform vec3 ambientColor;
+uniform vec3 objectColor;
 
 in vec4 ex_worldPosition;
 in vec3 ex_worldNormal;
@@ -22,7 +23,7 @@ void main () {
     vec3 reflectionDir = reflect(-lightDir, normalVector);
 
     float dot_product = dot(lightDir, normalVector);
-    vec3 diffuse = max(dot_product, 0.0) * vec3(0.92, 0.27, 0.19);
+    vec3 diffuse = max(dot_product, 0.0) * objectColor;
     // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
 
     float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);

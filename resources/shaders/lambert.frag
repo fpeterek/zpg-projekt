@@ -2,6 +2,7 @@
 
 uniform vec3 lightPosition;
 uniform vec3 ambientColor;
+uniform vec3 objectColor;
 
 in vec4 ex_worldPosition;
 in vec3 ex_worldNormal;
@@ -13,7 +14,7 @@ void main () {
     vec3 normalVector = normalize(ex_worldNormal);
 
     float dot_product = max(dot(lightVector, normalVector), 0.0);
-    vec4 diffuse = dot_product * vec4(0.92, 0.27, 0.19, 1.0);
+    vec4 diffuse = dot_product * vec4(objectColor, 1.0);
     // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
 
     vec4 ambient = vec4(ambientColor, 1.0);

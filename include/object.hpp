@@ -23,7 +23,11 @@ class Object {
     Rotation rotationDir = Rotation::none;
     glm::vec2 movementDir { 0.f, 0.f };
 
+    glm::vec3 color = defaultColor;
+
     std::reference_wrapper<Shader> shader;
+
+    unsigned int id;
 
     float rotationV = 0;
     glm::vec2 forces { 0.f, 0.f };
@@ -43,6 +47,10 @@ class Object {
     static float calcNewV(float current, float acc, float dec);
     static float capV(float current, float max);
 
+    static unsigned int objectCount;
+
+    static unsigned int getNextId();
+
     void updateGrowth(float dt);
     void updateRotation(float dt);
     void updateForces(float dt);
@@ -54,6 +62,7 @@ public:
     void draw() const;
 
     const glm::mat4 & transformation() const;
+    unsigned int objectId() const;
 
     void rotate(float degree, glm::vec3 axis);
     void translate(glm::vec3 delta);
@@ -67,7 +76,13 @@ public:
     void enableRotation(Rotation rotation);
     void disableRotation();
 
+    void setColor(glm::vec3 color);
+    void setColor(float r, float g, float b);
+
     void update(double dt);
+
+    static const glm::vec3 defaultColor;
+    static const glm::vec3 secondaryColor;
 
     class Builder {
 
@@ -78,6 +93,7 @@ public:
         glm::vec3 rotationAxis { 0.f };
         glm::vec3 position { 0.f };
         glm::vec3 scales { 1.f };
+        glm::vec3 color = defaultColor;
 
         void reset();
 
@@ -90,6 +106,8 @@ public:
         Builder & setPosition(float x, float y, float z);
         Builder & setScale(glm::vec3 scales);
         Builder & setScale(float x, float y, float z);
+        Builder & setColor(glm::vec3 color);
+        Builder & setColor(float r, float g, float b);
 
         Object build();
 

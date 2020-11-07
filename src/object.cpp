@@ -9,6 +9,11 @@
 
 #include "object.hpp"
 
+unsigned int Object::objectCount = 0;
+
+const glm::vec3 Object::defaultColor { 0.92, 0.27, 0.19 };
+const glm::vec3 Object::secondaryColor { 0.15, 0.89, 0.68 };
+
 void Object::rotate(float degree, const glm::vec3 axis) {
     transform = glm::rotate(transform, degree, axis);
 }
@@ -23,8 +28,9 @@ void Object::scale(const glm::vec3 scales) {
 
 void Object::draw() const {
     shader.get().use();
+    shader.get().passUniformLocation("objectColor", color);
     shader.get().passUniformLocation("modelMatrix", transform);
-    model.get().bindAndDraw();
+    model.get().bindAndDraw(id);
 }
 
 const glm::mat4 & Object::transformation() const {
@@ -113,7 +119,23 @@ void Object::update(const double dt) {
     updateForces(dt);
 }
 
-Object::Object(Model & model, Shader & shader) : model(model), shader(shader) { }
+Object::Object(Model & model, Shader & shader) : model(model), shader(shader), id(getNextId()) { }
+
+unsigned int Object::getNextId() {
+    return ++objectCount;
+}
+
+unsigned int Object::objectId() const {
+    return id;
+}
+
+void Object::setColor(glm::vec3 newColor) {
+    color = newColor;
+}
+
+void Object::setColor(float r, float g, float b) {
+    setColor({r, g, b});
+}
 
 Object::Builder & Object::Builder::setModel(Model & newModel) {
     model = &newModel;
@@ -163,6 +185,7 @@ void Object::Builder::reset() {
     rotationAxis = glm::vec3 { 0.f };
     position = glm::vec3 { 0.f };
     scales = glm::vec3 { 1.f };
+    color = defaultColor;
 }
 
 Object Object::Builder::build() {
@@ -176,8 +199,28 @@ Object Object::Builder::build() {
         obj.rotate(degree, rotationAxis);
     }
     obj.scale(scales);
+    obj.color = color;
 
     reset();
 
     return obj;
 }
+
+Object::Builder & Object::Builder::setColor(glm::vec3 newColor) {
+    color = newColor;
+    return *this;
+}
+
+Object::Builder & Object::Builder::setColor(float r, float g, float b) {
+    return setColor({r, g, b});
+}
+
+
+
+
+
+
+
+
+
+

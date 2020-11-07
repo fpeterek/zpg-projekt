@@ -100,7 +100,7 @@ void Camera::calcTarget() {
 
 void Camera::onMouseMove(const MouseData & md) {
 
-    if (not md.lbPressed()) {
+    if (not md.mbPressed()) {
         return;
     }
 

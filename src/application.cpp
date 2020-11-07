@@ -25,16 +25,24 @@ void Application::keyCallback(GLFWwindow * win, int key, int scancode, int actio
 
     switch (key) {
         case GLFW_KEY_I:
-            scene().objects.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            if (hasSelected()) {
+                getSelected().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::up);
+            }
             break;
         case GLFW_KEY_K:
-            scene().objects.front().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            if (hasSelected()) {
+                getSelected().applyFy((action == GLFW_RELEASE) ? Direction::none : Direction::down);
+            }
             break;
         case GLFW_KEY_J:
-            scene().objects.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            if (hasSelected()) {
+                getSelected().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::left);
+            }
             break;
         case GLFW_KEY_L:
-            scene().objects.front().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            if (hasSelected()) {
+                getSelected().applyFx((action == GLFW_RELEASE) ? Direction::none : Direction::right);
+            }
             break;
         case GLFW_KEY_W:
             scene().camera.moveForward((action == GLFW_RELEASE) ? Direction::none : Direction::up);
@@ -61,16 +69,24 @@ void Application::keyCallback(GLFWwindow * win, int key, int scancode, int actio
             scene().camera.rotateHor((action == GLFW_RELEASE) ? Direction::none : Direction::right);
             break;
         case GLFW_KEY_U:
-            scene().objects.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::left);
+            if (hasSelected()) {
+                getSelected().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::left);
+            }
             break;
         case GLFW_KEY_O:
-            scene().objects.front().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::right);
+            if (hasSelected()) {
+                getSelected().enableRotation((action == GLFW_RELEASE) ? Rotation::none : Rotation::right);
+            }
             break;
         case GLFW_KEY_KP_ADD:
-            scene().objects.front().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::grow);
+            if (hasSelected()) {
+                getSelected().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::grow);
+            }
             break;
         case GLFW_KEY_KP_SUBTRACT:
-            scene().objects.front().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::shrink);
+            if (hasSelected()) {
+                getSelected().enableGrowth((action == GLFW_RELEASE) ? Growth::none : Growth::shrink);
+            }
             break;
         default:
             break;
@@ -129,9 +145,9 @@ void Application::initCallbacks() {
         if (button == GLFW_MOUSE_BUTTON_1) {
             btn = Mouse::Button::LB;
         } else if (button == GLFW_MOUSE_BUTTON_2) {
-            btn = Mouse::Button::MB;
-        } else if (button == GLFW_MOUSE_BUTTON_3) {
             btn = Mouse::Button::RB;
+        } else if (button == GLFW_MOUSE_BUTTON_3) {
+            btn = Mouse::Button::MB;
         }
         if (action == GLFW_PRESS) {
             instance().mouse.buttonPress(btn);
@@ -193,6 +209,8 @@ void Application::initGL() {
     initGLFWContext();
     initGLEW();
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     printInfo();
 }
 
@@ -214,7 +232,7 @@ void Application::run() {
 
 void Application::update(const float dt) {
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     scene().update(dt);
 
@@ -296,3 +314,63 @@ Scene & Application::scene() {
     }
     return *scenePtr;
 }
+
+void Application::deselect() {
+    if (hasSelected()) {
+        getSelected().setColor(Object::defaultColor);
+    }
+    selected = noneSelected;
+}
+
+void Application::onButtonPress(const MouseData & mouseData) {
+    if (mouseData.lbPressed()) {
+        selectObject(mouseData.x, mouseData.y);
+    }
+}
+
+bool Application::hasSelected() {
+    return selected != noneSelected and selected < scene().objects.size();
+}
+
+Object & Application::getSelected() {
+    if (not hasSelected()) {
+        throw std::runtime_error("No object selected");
+    }
+    return scene().objects[selected];
+}
+
+void Application::selectObject(int mouseX, int mouseY) {
+
+    GLbyte color[4];
+    GLfloat depth;
+    GLuint objectId;
+
+    const GLint x = mouseX; // bufferWidth - mouseX;
+    const GLint y = bufferHeight - mouseY;
+
+    glReadPixels(x, y, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &objectId);
+
+    std::cout << "Selected object: " << objectId << std::endl;
+
+    deselect();
+    if (objectId) {
+        selected = scene().indexOf(objectId);
+        getSelected().setColor(Object::secondaryColor);
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
