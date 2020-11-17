@@ -14,7 +14,10 @@
 
 class Scene {
 
-    Scene(std::vector<Object> objects, AmbientLight ambientLight, PositionedLight light, glm::vec3 cameraPos);
+    Scene(std::vector<Object> objects, AmbientLight ambientLight,
+          std::vector<std::shared_ptr<PositionedLight>> light, glm::vec3 cameraPos);
+
+    std::vector<std::shared_ptr<PositionedLight>> lights;
 
 public:
 
@@ -23,7 +26,6 @@ public:
     std::vector<Object> objects;
 
     const AmbientLight ambientLight;
-    const PositionedLight light;
 
     Camera camera;
 
@@ -34,13 +36,16 @@ public:
     void addAll(const std::vector<Object> & objects);
     void addObject(const Object & object);
 
+    size_t lightCount() const;
+    const PositionedLight & light(size_t index);
+
     size_t indexOf(unsigned int objectId);
 
     class Builder {
 
         std::vector<Object> objects;
         AmbientLight ambientLight;
-        PositionedLight light;
+        std::vector<std::shared_ptr<PositionedLight>> lights;
         glm::vec3 cameraPos;
 
         void reset();

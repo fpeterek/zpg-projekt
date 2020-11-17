@@ -325,6 +325,8 @@ void Application::deselect() {
 void Application::onButtonPress(const MouseData & mouseData) {
     if (mouseData.lbPressed()) {
         selectObject(mouseData.x, mouseData.y);
+    } else if (mouseData.rbPressed()) {
+        emplaceObject(mouseData.x, mouseData.y);
     }
 }
 
@@ -341,11 +343,11 @@ Object & Application::getSelected() {
 
 void Application::selectObject(int mouseX, int mouseY) {
 
-    GLbyte color[4];
-    GLfloat depth;
+    // GLbyte color[4];
+    // GLfloat depth;
     GLuint objectId;
 
-    const GLint x = mouseX; // bufferWidth - mouseX;
+    const GLint x = mouseX;
     const GLint y = bufferHeight - mouseY;
 
     glReadPixels(x, y, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &objectId);
@@ -360,7 +362,26 @@ void Application::selectObject(int mouseX, int mouseY) {
 
 }
 
+void Application::emplaceObject(const int mouseX, const int mouseY) {
 
+    GLfloat depth;
+
+    const GLint x = mouseX;
+    const GLint y = bufferHeight - mouseY;
+
+    glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+
+    glm::vec3 screenX = glm::vec3 { x, y, depth };
+    glm::vec4 viewport { 0, 0, bufferWidth, bufferHeight };
+    auto pos = glm::unProject(screenX, scene().camera.view(), scene().camera.project(), viewport);
+
+    scene().objects.emplace_back(
+        Object::Builder()
+            .emplaceObject(models::sphere(), ShaderManager::blinn())
+            .setPosition(pos)
+            .build()
+    );
+}
 
 
 

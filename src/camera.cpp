@@ -130,3 +130,11 @@ void Camera::setPosition(glm::vec3 pos) {
     apply();
 }
 
+glm::mat4 Camera::view() const {
+    return camera;
+}
+
+glm::mat4 Camera::project() const {
+    return projection;
+}
+

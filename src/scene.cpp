@@ -15,7 +15,9 @@ void Scene::update(const double dt) {
 
 void Scene::init() {
     ambientLight.apply();
-    light.apply();
+    for (auto & l : lights) {
+        l->apply();
+    }
     camera.apply();
 }
 
@@ -29,11 +31,13 @@ void Scene::addAll(const std::vector<Object> & vector) {
     }
 }
 
-Scene::Scene(std::vector<Object> objects, AmbientLight ambientLight, PositionedLight posLight, glm::vec3 cameraPos) :
-    objects(std::move(objects)), ambientLight(std::move(ambientLight)),
-    light(std::move(posLight)) {
+Scene::Scene(std::vector<Object> objects, AmbientLight ambientLight,
+             std::vector<std::shared_ptr<PositionedLight>> lights, glm::vec3 cameraPos) :
+    objects(std::move(objects)), ambientLight(std::move(ambientLight)),lights(std::move(lights)) {
+
     init();
     camera.setPosition(cameraPos);
+
 }
 
 size_t Scene::indexOf(unsigned int objectId) {
@@ -43,6 +47,14 @@ size_t Scene::indexOf(unsigned int objectId) {
         }
     }
     return std::numeric_limits<size_t>::max();
+}
+
+size_t Scene::lightCount() const {
+    return lights.size();
+}
+
+const PositionedLight & Scene::light(size_t index) {
+    return *lights[index];
 }
 
 void Scene::Builder::reset() {
@@ -65,11 +77,12 @@ Scene::Builder & Scene::Builder::addObject(const Object & object) {
 }
 
 Scene::Builder & Scene::Builder::emplaceLight(glm::vec3 color, glm::vec3 position) {
-    light = PositionedLight { color, position };
-    light.addObserver(ShaderManager::constant());
-    light.addObserver(ShaderManager::lambert());
-    light.addObserver(ShaderManager::phong());
-    light.addObserver(ShaderManager::blinn());
+    auto light = std::make_shared<PositionedLight>(color, position);
+    light->addObserver(ShaderManager::constant());
+    light->addObserver(ShaderManager::lambert());
+    light->addObserver(ShaderManager::phong());
+    light->addObserver(ShaderManager::blinn());
+    lights.emplace_back(light);
     return *this;
 }
 
@@ -83,7 +96,7 @@ Scene::Builder & Scene::Builder::emplaceAmbientLight(glm::vec3 color) {
 }
 
 Scene * Scene::Builder::build() {
-    Scene * scene = new Scene { std::move(objects), ambientLight, light, cameraPos };
+    Scene * scene = new Scene { std::move(objects), ambientLight, lights, cameraPos };
 
     scene->camera.addObserver(ShaderManager::constant());
     scene->camera.addObserver(ShaderManager::lambert());

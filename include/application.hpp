@@ -53,6 +53,8 @@ class Application : MouseObserver {
     void deselect();
     void selectObject(int mouseX, int mouseY);
 
+    void emplaceObject(int mouseX, int mouseY);
+
     bool hasSelected();
     Object & getSelected();
 

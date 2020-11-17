@@ -66,6 +66,9 @@ public:
     void apply();
 
     void onMouseMove(const MouseData & md) override;
+
+    glm::mat4 view() const;
+    glm::mat4 project() const;
 };
 
 #endif //ZPG_PROJEKT_CAMERA_HPP
