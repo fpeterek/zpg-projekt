@@ -42,13 +42,15 @@ public:
     void passUniformLocation(const char * var, const glm::mat3 & matrix) const;
     void passUniformLocation(const std::string & var, const glm::vec3 & vector) const;
     void passUniformLocation(const char * var, const glm::vec3 & vector) const;
+    void passUniformLocation(const std::string & var, int32_t value) const;
+    void passUniformLocation(const char * var, int32_t value) const;
 
     void updateView(const glm::mat4 & view) override;
     void updateProjection(const glm::mat4 & projection) override;
     void updatePosition(const glm::vec3 & position) override;
 
-    void colorChanged(glm::vec3 color, LightType lightType) override;
-    void positionChanged(glm::vec3 position, LightType lightType) override;
+    void colorChanged(glm::vec3 color, size_t lightIndex, LightType lightType) override;
+    void positionChanged(glm::vec3 position, size_t lightIndex, LightType lightType) override;
 
 };
 

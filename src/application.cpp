@@ -277,6 +277,11 @@ Application::Application() {
 
     scenePtr = sceneBuilder
         .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f })
+        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f })
+        // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 6.f, 6.0f })
+        // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, -6.f, -6.0f })
+        // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, -8.0f })
+        // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f })
         .emplaceAmbientLight(glm::vec3 { .1f })
         .addObject(
             objBuilder.emplaceObject(models::sphere(), ShaderManager::constant()).setPosition(5.f, 0.f, 0.f).build()

@@ -27,19 +27,22 @@ void main () {
     vec3 diffuse = vec3(0.0, 0.0, 0.0);
 
     vec3 worldPos = vec3(ex_worldPosition);
+    vec3 normalVector = normalize(ex_worldNormal);
 
     for (int index = 0; index < lightCount; ++index) {
         vec3 lightPosition = lights[index].position;
         vec3 lightColor = lights[index].lightColor;
 
         vec3 viewDir = normalize(cameraPosition - worldPos);
-        vec3 normalVector = normalize(ex_worldNormal);
+
+        float dist = length(lightPosition - worldPos);
+        float attenuation = clamp(3.0 / dist, 0.0, 1.0);
 
         vec3 lightDir = normalize(lightPosition - worldPos);
         vec3 halfDir = normalize(lightDir + viewDir);
 
         float dot_product = dot(lightDir, normalVector);
-        diffuse = diffuse + max(dot_product, 0.0) * objectColor;
+        diffuse = diffuse + max(dot_product, 0.0) * objectColor * attenuation;
         // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
 
         float specValue = pow(max(dot(halfDir, normalVector), 0.0), 16.0);
@@ -48,7 +51,7 @@ void main () {
             spec = vec3(0.0);
         }
 
-        specular = specular + spec;
+        specular = specular + spec * attenuation;
     }
 
 

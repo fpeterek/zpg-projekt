@@ -135,19 +135,30 @@ void Shader::updatePosition(const glm::vec3 & position) {
     passUniformLocation("cameraPosition", position);
 }
 
-void Shader::colorChanged(glm::vec3 color, LightType lightType) {
+void Shader::colorChanged(glm::vec3 color, size_t lightIndex, LightType lightType) {
     if (lightType == LightType::Ambient) {
         passUniformLocation("ambientColor", color);
     } else if (lightType == LightType::Default) {
-        passUniformLocation("lightColor", color);
+        passUniformLocation("lights[" + std::to_string(lightIndex) + "].lightColor", color);
     }
 }
 
-void Shader::positionChanged(glm::vec3 position, LightType lightType) {
+void Shader::positionChanged(glm::vec3 position, size_t lightIndex, LightType lightType) {
     if (lightType == LightType::Ambient) {
         /* noop -> ambient light has no coordinates */
     } else if (lightType == LightType::Default) {
-        passUniformLocation("lightPosition", position);
+        passUniformLocation("lights[" + std::to_string(lightIndex) + "].position", position);
+    }
+}
+
+void Shader::passUniformLocation(const std::string & var, const int32_t value) const {
+    passUniformLocation(var.c_str(), value);
+}
+
+void Shader::passUniformLocation(const char * var, const int32_t value) const {
+    const auto location = getUniformLocation(var);
+    if (location >= 0) {
+        glProgramUniform1i(shaderId, location, value);
     }
 }
 

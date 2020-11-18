@@ -16,8 +16,8 @@ enum class LightType {
 };
 
 struct LightObserver {
-    virtual void colorChanged(glm::vec3 color, LightType lightType) = 0;
-    virtual void positionChanged(glm::vec3 position, LightType lightType) = 0;
+    virtual void colorChanged(glm::vec3 color, size_t lightIndex, LightType lightType) = 0;
+    virtual void positionChanged(glm::vec3 position, size_t lightIndex, LightType lightType) = 0;
 };
 
 class ColoredLight {
@@ -49,6 +49,8 @@ class PositionedLight : public ColoredLight {
 public:
     PositionedLight();
     PositionedLight(glm::vec3 color, glm::vec3 position);
+
+    std::size_t lightIndex = 0;
 
     void move(glm::vec3 delta) const;
     void setPosition(glm::vec3 newPos) const;

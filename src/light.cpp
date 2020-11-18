@@ -33,13 +33,13 @@ void ColoredLight::addObserver(LightObserver & observer) {
 
 void ColoredLight::onColorChanged(const LightType lightType) const {
     for (auto obs : observers) {
-        obs.get().colorChanged(color, lightType);
+        obs.get().colorChanged(color, 0, lightType);
     }
 }
 
 void ColoredLight::apply() const {
     for (auto obs : observers) {
-        obs.get().colorChanged(color, LightType::Ambient);
+        obs.get().colorChanged(color, 0, LightType::Ambient);
     }
 }
 
@@ -63,13 +63,13 @@ void PositionedLight::setColor(const glm::vec3 newColor) const {
 
 void PositionedLight::onPositionChanged(const LightType lightType) const {
     for (auto obs : observers) {
-        obs.get().positionChanged(position, lightType);
+        obs.get().positionChanged(position, lightIndex, lightType);
     }
 }
 
 void PositionedLight::apply() const {
     for (auto obs : observers) {
-        obs.get().colorChanged(color, LightType::Default);
-        obs.get().positionChanged(position, LightType::Default);
+        obs.get().colorChanged(color, lightIndex, LightType::Default);
+        obs.get().positionChanged(position, lightIndex, LightType::Default);
     }
 }

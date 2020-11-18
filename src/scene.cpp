@@ -15,9 +15,7 @@ void Scene::update(const double dt) {
 
 void Scene::init() {
     ambientLight.apply();
-    for (auto & l : lights) {
-        l->apply();
-    }
+    applyLights();
     camera.apply();
 }
 
@@ -53,8 +51,51 @@ size_t Scene::lightCount() const {
     return lights.size();
 }
 
-const PositionedLight & Scene::light(size_t index) {
+std::shared_ptr<PositionedLight> Scene::lightPtr(const size_t index) const {
+    return lights[index];
+}
+
+const PositionedLight & Scene::light(const size_t index) const {
     return *lights[index];
+}
+
+void Scene::applyLights() const {
+    setShaderCount();
+    for (const auto & light : lights) {
+        light->apply();
+    }
+}
+
+void Scene::removeLight(const std::size_t lightIndex) {
+    lights.erase(lights.begin() + lightIndex);
+    for (std::size_t i = lightIndex; i < lights.size(); ++i) {
+        lights[i]->lightIndex = i;
+    }
+    applyLights();
+}
+
+static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos,
+                         std::vector<std::shared_ptr<PositionedLight>> & vec) {
+
+    auto light = std::make_shared<PositionedLight>(color, pos);
+    light->addObserver(ShaderManager::constant());
+    light->addObserver(ShaderManager::lambert());
+    light->addObserver(ShaderManager::phong());
+    light->addObserver(ShaderManager::blinn());
+    light->lightIndex = vec.size();
+    vec.emplace_back(light);
+
+}
+
+void Scene::emplaceLight(glm::vec3 color, glm::vec3 position) {
+    ::emplaceLight(color, position, lights);
+    applyLights();
+}
+
+void Scene::setShaderCount() const {
+    ShaderManager::lambert().passUniformLocation("lightCount", lights.size());
+    ShaderManager::blinn().passUniformLocation("lightCount", lights.size());
+    ShaderManager::phong().passUniformLocation("lightCount", lights.size());
 }
 
 void Scene::Builder::reset() {
@@ -77,12 +118,7 @@ Scene::Builder & Scene::Builder::addObject(const Object & object) {
 }
 
 Scene::Builder & Scene::Builder::emplaceLight(glm::vec3 color, glm::vec3 position) {
-    auto light = std::make_shared<PositionedLight>(color, position);
-    light->addObserver(ShaderManager::constant());
-    light->addObserver(ShaderManager::lambert());
-    light->addObserver(ShaderManager::phong());
-    light->addObserver(ShaderManager::blinn());
-    lights.emplace_back(light);
+    ::emplaceLight(color, position, lights);
     return *this;
 }
 

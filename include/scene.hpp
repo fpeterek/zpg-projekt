@@ -19,6 +19,9 @@ class Scene {
 
     std::vector<std::shared_ptr<PositionedLight>> lights;
 
+    void applyLights() const;
+    void setShaderCount() const;
+
 public:
 
     Scene() = delete;
@@ -37,7 +40,10 @@ public:
     void addObject(const Object & object);
 
     size_t lightCount() const;
-    const PositionedLight & light(size_t index);
+    const PositionedLight & light(size_t index) const;
+    std::shared_ptr<PositionedLight> lightPtr(size_t index) const;
+    void removeLight(std::size_t lightIndex);
+    void emplaceLight(glm::vec3 color, glm::vec3 position);
 
     size_t indexOf(unsigned int objectId);
 
