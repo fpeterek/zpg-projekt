@@ -30,8 +30,8 @@ void Scene::addAll(const std::vector<Object> & vector) {
 }
 
 Scene::Scene(std::vector<Object> objects, AmbientLight ambientLight,
-             std::vector<std::shared_ptr<PositionedLight>> lights, glm::vec3 cameraPos) :
-    objects(std::move(objects)), ambientLight(std::move(ambientLight)),lights(std::move(lights)) {
+             std::vector<std::shared_ptr<ColoredLight>> lights, glm::vec3 cameraPos) :
+    objects(std::move(objects)), ambientLight(std::move(ambientLight)), lights(std::move(lights)) {
 
     init();
     camera.setPosition(cameraPos);
@@ -51,11 +51,11 @@ size_t Scene::lightCount() const {
     return lights.size();
 }
 
-std::shared_ptr<PositionedLight> Scene::lightPtr(const size_t index) const {
+std::shared_ptr<ColoredLight> Scene::lightPtr(const size_t index) const {
     return lights[index];
 }
 
-const PositionedLight & Scene::light(const size_t index) const {
+const ColoredLight & Scene::light(const size_t index) const {
     return *lights[index];
 }
 
@@ -74,10 +74,19 @@ void Scene::removeLight(const std::size_t lightIndex) {
     applyLights();
 }
 
-static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos,
-                         std::vector<std::shared_ptr<PositionedLight>> & vec) {
+static std::shared_ptr<ColoredLight> createLight(glm::vec3 color, glm::vec3 data, gl::Light type) {
+    if (type == gl::Light::Point) {
+        return std::make_shared<PositionedLight>(color, data);
+    } else if (type == gl::Light::Directional) {
+        return std::make_shared<DirectionalLight>(color, data);
+    }
+    throw std::runtime_error("Unsupported light type");
+}
 
-    auto light = std::make_shared<PositionedLight>(color, pos);
+static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos, const gl::Light type,
+                         std::vector<std::shared_ptr<ColoredLight>> & vec) {
+
+    auto light = createLight(color, pos, type);
     light->addObserver(ShaderManager::constant());
     light->addObserver(ShaderManager::lambert());
     light->addObserver(ShaderManager::phong());
@@ -87,8 +96,8 @@ static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos,
 
 }
 
-void Scene::emplaceLight(glm::vec3 color, glm::vec3 position) {
-    ::emplaceLight(color, position, lights);
+void Scene::emplaceLight(glm::vec3 color, glm::vec3 position, gl::Light type) {
+    ::emplaceLight(color, position, type, lights);
     applyLights();
 }
 
@@ -101,7 +110,8 @@ void Scene::setShaderCount() const {
 void Scene::Builder::reset() {
     objects = { };
     emplaceAmbientLight({ 0.1f, 0.1f, 0.1f });
-    emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f } );
+    lights = { };
+    // emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f }, gl::Light::Point);
     cameraPos = { 0.f, 0.f, 0.f };
 }
 
@@ -117,8 +127,8 @@ Scene::Builder & Scene::Builder::addObject(const Object & object) {
     return *this;
 }
 
-Scene::Builder & Scene::Builder::emplaceLight(glm::vec3 color, glm::vec3 position) {
-    ::emplaceLight(color, position, lights);
+Scene::Builder & Scene::Builder::emplaceLight(glm::vec3 color, glm::vec3 position, gl::Light type) {
+    ::emplaceLight(color, position, type, lights);
     return *this;
 }
 
@@ -132,7 +142,7 @@ Scene::Builder & Scene::Builder::emplaceAmbientLight(glm::vec3 color) {
 }
 
 Scene * Scene::Builder::build() {
-    Scene * scene = new Scene { std::move(objects), ambientLight, lights, cameraPos };
+    auto * scene = new Scene { std::move(objects), ambientLight, lights, cameraPos };
 
     scene->camera.addObserver(ShaderManager::constant());
     scene->camera.addObserver(ShaderManager::lambert());

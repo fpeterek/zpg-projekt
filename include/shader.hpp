@@ -51,7 +51,7 @@ public:
 
     void colorChanged(glm::vec3 color, size_t lightIndex, LightType lightType) override;
     void positionChanged(glm::vec3 position, size_t lightIndex, LightType lightType) override;
-
+    void typeChanged(gl::Light type, size_t lightIndex) override;
 };
 
 class ShaderManager {

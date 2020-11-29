@@ -5,6 +5,7 @@
 struct Light {
     vec3 position;
     vec3 lightColor;
+    int lightType;
 };
 
 uniform Light lights[MAX_LIGHTS];

@@ -162,6 +162,10 @@ void Shader::passUniformLocation(const char * var, const int32_t value) const {
     }
 }
 
+void Shader::typeChanged(gl::Light type, size_t lightIndex) {
+    passUniformLocation("lights[" + std::to_string(lightIndex) + "].lightType", int32_t(type));
+}
+
 ShaderManager & ShaderManager::instance() {
     if (not sm) {
         sm = new ShaderManager();

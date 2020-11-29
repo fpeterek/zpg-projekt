@@ -280,8 +280,8 @@ Application::Application() {
     Scene::Builder sceneBuilder;
 
     scenePtr = sceneBuilder
-        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 1.f, 0.f })
-        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f })
+        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 1.f, 0.f }, gl::Light::Point)
+        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f }, gl::Light::Point)
         // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 6.f, 6.0f })
         // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, -6.f, -6.0f })
         // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, -8.0f })
