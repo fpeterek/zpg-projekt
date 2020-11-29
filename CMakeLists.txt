@@ -19,6 +19,7 @@ add_executable(
         src/light.cpp
         src/model.cpp
         src/scene.cpp
+        src/texture.cpp
 )
 
 file(COPY resources DESTINATION .)

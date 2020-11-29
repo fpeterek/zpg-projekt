@@ -13,9 +13,11 @@ uniform int lightCount;
 uniform vec3 cameraPosition;
 uniform vec3 ambientColor;
 uniform vec3 objectColor;
+uniform sampler2D textureUnitID;
 
 in vec4 ex_worldPosition;
 in vec3 ex_worldNormal;
+in vec2 uv;
 
 out vec4 out_color;
 
@@ -28,6 +30,9 @@ void main () {
 
     vec3 worldPos = vec3(ex_worldPosition);
     vec3 normalVector = normalize(ex_worldNormal);
+
+    vec4 tex = texture(textureUnitID, uv);
+    vec3 color = vec3(tex.x, tex.y, tex.z);
 
     for (int index = 0; index < lightCount; ++index) {
 
@@ -42,7 +47,7 @@ void main () {
         vec3 reflectionDir = reflect(-lightDir, normalVector);
 
         float dot_product = dot(lightDir, normalVector);
-        diffuse = diffuse + max(dot_product, 0.0) * objectColor * attenuation;
+        diffuse = diffuse + max(dot_product, 0.0) * color * attenuation;
         // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
 
         float specValue = pow(max(dot(viewDir, reflectionDir), 0.0), 16);

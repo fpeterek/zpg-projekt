@@ -5,6 +5,7 @@
 #include "application.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 #include "models.hpp"
 
@@ -194,6 +195,9 @@ void Application::printInfo() {
 void Application::initGLFW() {
 
     if (not glfwInit()) {
+        const char * dsc;
+        glfwGetError(&dsc);
+        std::cout << dsc << std::endl;
         throw std::runtime_error("ERROR: could not start GLFW3");
     }
     /*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -276,7 +280,7 @@ Application::Application() {
     Scene::Builder sceneBuilder;
 
     scenePtr = sceneBuilder
-        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f })
+        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 1.f, 0.f })
         .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f })
         // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 6.f, 6.0f })
         // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, -6.f, -6.0f })
@@ -284,22 +288,40 @@ Application::Application() {
         // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f })
         .emplaceAmbientLight(glm::vec3 { .1f })
         .addObject(
-            objBuilder.emplaceObject(models::sphere(), ShaderManager::constant()).setPosition(5.f, 0.f, 0.f).build()
+            objBuilder
+            .emplaceObject(models::sphere(), ShaderManager::constant(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+            .setPosition(5.f, 0.f, 0.f).build()
         )
         .addObject(
-            objBuilder.emplaceObject(models::sphere(), ShaderManager::lambert()).setPosition(-5.f, 0.f, 0.f).build()
+            objBuilder
+            .emplaceObject(models::sphere(), ShaderManager::lambert(), TextureManager::get("grass"))
+            .setPosition(-5.f, 0.f, 0.f).build()
         )
         .addObject(
-            objBuilder.emplaceObject(models::sphere(), ShaderManager::phong()).setPosition(0.f, 0.f, 5.f).build()
+            objBuilder
+            .emplaceObject(models::sphere(), ShaderManager::phong(), TextureManager::get("grass"))
+            .setPosition(0.f, 0.f, 5.f).build()
         )
         .addObject(
-            objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, 0.f, -5.f).build()
+            objBuilder
+            .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
+            .setPosition(0.f, 0.f, -5.f).build()
         )
         .addObject(
-            objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, 5.f, 0.f).build()
+            objBuilder
+            .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
+            .setPosition(0.f, 5.f, 0.f).build()
         )
         .addObject(
-            objBuilder.emplaceObject(models::sphere(), ShaderManager::blinn()).setPosition(0.f, -5.f, 0.f).build()
+            objBuilder
+            .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
+            .setPosition(0.f, -5.f, 0.f).build()
+        )
+        .addObject(
+            objBuilder
+            .emplaceObject(models::plain(), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+            .setScale(8, 1, 8)
+            .build()
         )
         .setCameraPosition(0.f, 1.f, 3.f)
         .build();
@@ -382,7 +404,7 @@ void Application::emplaceObject(const int mouseX, const int mouseY) {
 
     scene().objects.emplace_back(
         Object::Builder()
-            .emplaceObject(models::sphere(), ShaderManager::blinn())
+            .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
             .setPosition(pos)
             .build()
     );

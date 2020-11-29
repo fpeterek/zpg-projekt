@@ -12,9 +12,11 @@ uniform int lightCount;
 
 uniform vec3 ambientColor;
 uniform vec3 objectColor;
+uniform sampler2D textureUnitID;
 
 in vec4 ex_worldPosition;
 in vec3 ex_worldNormal;
+in vec2 uv;
 
 out vec4 out_color;
 
@@ -40,8 +42,5 @@ void main () {
         // vec4 diffuse = dot_product * vec4(0.385, 0.647, 0.812, 1.0);
     }
 
-    vec3 ambient = ambientColor;
-
-    out_color = vec4(ambient + diffuse, 1.0);
-    // out_color = vec4(0.92, 0.27, 0.19, 1.0);
+    out_color = texture(textureUnitID, uv); // * vec4(ambientColor + diffuse, 1.0);
 }

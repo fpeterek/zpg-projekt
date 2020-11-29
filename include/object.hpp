@@ -6,6 +6,7 @@
 #define ZPG_PROJEKT_OBJECT_HPP
 
 #include <vector>
+#include <functional>
 
 #include <glm/mat4x4.hpp>
 #include <GL/glew.h>
@@ -13,10 +14,12 @@
 #include "model.hpp"
 #include "enums.hpp"
 #include "shader.hpp"
+#include "texture.hpp"
+
 
 class Object {
 
-    glm::mat4 transform{1.f};
+    glm::mat4 transform { 1.f };
     std::reference_wrapper<Model> model;
 
     Growth growthDir = Growth::none;
@@ -26,6 +29,7 @@ class Object {
     glm::vec3 color = defaultColor;
 
     std::reference_wrapper<Shader> shader;
+    std::reference_wrapper<Texture> texture;
 
     unsigned int id;
 
@@ -57,7 +61,7 @@ class Object {
 
 public:
 
-    Object(Model & model, Shader & shader);
+    Object(Model & model, Shader & shader, Texture & texture);
 
     void draw() const;
 
@@ -88,6 +92,7 @@ public:
 
         Model * model = nullptr;
         Shader * shader = nullptr;
+        Texture * texture = nullptr;
 
         float degree = 0.f;
         glm::vec3 rotationAxis { 0.f };
@@ -100,7 +105,8 @@ public:
     public:
         Builder & setModel(Model & model);
         Builder & setShader(Shader & shader);
-        Builder & emplaceObject(Model & model, Shader & shader);
+        Builder & setTexture(Texture & texture);
+        Builder & emplaceObject(Model & model, Shader & shader, Texture & texture);
         Builder & setRotation(float degree, glm::vec3 axis);
         Builder & setPosition(glm::vec3 position);
         Builder & setPosition(float x, float y, float z);

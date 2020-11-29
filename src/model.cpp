@@ -20,12 +20,14 @@ void Model::initVao() {
     glBindVertexArray(vao); //bind the VAO
     glEnableVertexAttribArray(0); //enable vertex attributes
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     using type = decltype(points)::value_type;
     constexpr int typeSize = sizeof(type);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * typeSize, nullptr);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * typeSize, (GLvoid*)(3*typeSize));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * typeSize, nullptr);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * typeSize, (GLvoid*)(3*typeSize));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * typeSize, (GLvoid*)(6*typeSize));
 }
 
 void Model::bindAndDraw(const unsigned int id) const {

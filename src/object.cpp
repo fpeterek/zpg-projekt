@@ -30,6 +30,7 @@ void Object::draw() const {
     shader.get().use();
     shader.get().passUniformLocation("objectColor", color);
     shader.get().passUniformLocation("modelMatrix", transform);
+    texture.get().bind(shader.get());
     model.get().bindAndDraw(id);
 }
 
@@ -119,7 +120,8 @@ void Object::update(const double dt) {
     updateForces(dt);
 }
 
-Object::Object(Model & model, Shader & shader) : model(model), shader(shader), id(getNextId()) { }
+Object::Object(Model & model, Shader & shader, Texture & texture) :
+    model(model), shader(shader), texture(texture), id(getNextId()) { }
 
 unsigned int Object::getNextId() {
     return ++objectCount;
@@ -147,9 +149,8 @@ Object::Builder & Object::Builder::setShader(Shader & newShader) {
     return *this;
 }
 
-Object::Builder & Object::Builder::emplaceObject(Model & model, Shader & shader) {
-    setModel(model);
-    return setShader(shader);
+Object::Builder & Object::Builder::emplaceObject(Model & model, Shader & shader, Texture & texture) {
+    return setModel(model).setTexture(texture).setShader(shader);
 }
 
 Object::Builder & Object::Builder::setRotation(float newDegree, glm::vec3 axis) {
@@ -180,6 +181,7 @@ void Object::Builder::reset() {
 
     model = nullptr;
     shader = nullptr;
+    texture = nullptr;
     degree = 0.f;
 
     rotationAxis = glm::vec3 { 0.f };
@@ -193,7 +195,7 @@ Object Object::Builder::build() {
         throw std::runtime_error("ObjectBuilder error: Missing value '" + std::string(model ? "shader" : "model") + "'");
     }
 
-    Object obj { *model, *shader };
+    Object obj { *model, *shader, *texture };
     obj.translate(position);
     if (rotationAxis.x or rotationAxis.y or rotationAxis.z) {
         obj.rotate(degree, rotationAxis);
@@ -213,6 +215,11 @@ Object::Builder & Object::Builder::setColor(glm::vec3 newColor) {
 
 Object::Builder & Object::Builder::setColor(float r, float g, float b) {
     return setColor({r, g, b});
+}
+
+Object::Builder & Object::Builder::setTexture(Texture & tex) {
+    texture = &tex;
+    return *this;
 }
 
 
