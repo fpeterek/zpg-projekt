@@ -5,6 +5,7 @@
 struct Light {
     vec3 position;
     vec3 lightColor;
+    int lightType;
 };
 
 uniform Light lights[MAX_LIGHTS];
@@ -20,7 +21,27 @@ in vec2 uv;
 
 out vec4 out_color;
 
-void main () {
+vec3 point_light(vec3 color, vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 lightColor) {
+
+    float dist = length(lightPosition - worldPos);
+    float attenuation = clamp(5.0 / dist, 0.0, 1.0);
+
+    vec3 lightVector = normalize(lightPosition - vec3(ex_worldPosition));
+
+    float dot_product = max(dot(lightVector, normalVector), 0.0);
+
+    return dot_product * color * attenuation;
+}
+
+vec3 directional_light(vec3 color, vec3 normalVector, vec3 lightDirection, vec3 lightColor) {
+
+    vec3 lightDir = normalize(-lightDirection);
+    float dot_product = max(dot(lightDir, normalVector), 0.0);
+
+    return dot_product * color;
+}
+
+void main() {
 
     vec3 diffuse = vec3(0.0, 0.0, 0.0);
 
@@ -35,13 +56,15 @@ void main () {
         vec3 lightPosition = lights[index].position;
         vec3 lightColor = lights[index].lightColor;
 
-        float dist = length(lightPosition - worldPos);
-        float attenuation = clamp(3.0 / dist, 0.0, 1.0);
+        vec3 d;
 
-        vec3 lightVector = normalize(lightPosition - vec3(ex_worldPosition));
+        if (lights[index].lightType == 1) {
+            d = point_light(color, worldPos, normalVector, lightPosition, lightColor);
+        } else if (lights[index].lightType == 2) {
+            d = directional_light(color, normalVector, lightPosition, lightColor);
+        }
 
-        float dot_product = max(dot(lightVector, normalVector), 0.0);
-        diffuse = diffuse + dot_product * color * attenuation;
+        diffuse = diffuse + d;
     }
 
     out_color = vec4(ambientColor + diffuse, 1.0);
