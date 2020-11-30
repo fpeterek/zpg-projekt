@@ -138,7 +138,7 @@ void Shader::updatePosition(const glm::vec3 & position) {
 void Shader::colorChanged(glm::vec3 color, size_t lightIndex, LightType lightType) {
     if (lightType == LightType::Ambient) {
         passUniformLocation("ambientColor", color);
-    } else if (lightType == LightType::Default) {
+    } else if (lightType == LightType::Default or lightType == LightType::Directional) {
         passUniformLocation("lights[" + std::to_string(lightIndex) + "].lightColor", color);
     }
 }
@@ -146,7 +146,7 @@ void Shader::colorChanged(glm::vec3 color, size_t lightIndex, LightType lightTyp
 void Shader::positionChanged(glm::vec3 position, size_t lightIndex, LightType lightType) {
     if (lightType == LightType::Ambient) {
         /* noop -> ambient light has no coordinates */
-    } else if (lightType == LightType::Default) {
+    } else if (lightType == LightType::Default or lightType == LightType::Directional) {
         passUniformLocation("lights[" + std::to_string(lightIndex) + "].position", position);
     }
 }
