@@ -6,6 +6,7 @@
 #include <exception>
 
 #include <glm/ext/matrix_transform.hpp>
+#include <utility>
 
 #include "object.hpp"
 
@@ -30,8 +31,8 @@ void Object::draw() const {
     shader.get().use();
     shader.get().passUniformLocation("objectColor", color);
     shader.get().passUniformLocation("modelMatrix", transform);
-    texture.get().bind(shader.get());
-    model.get().bindAndDraw(id);
+    texture->bind(shader.get());
+    model->draw(id, shader.get());
 }
 
 const glm::mat4 & Object::transformation() const {
@@ -120,8 +121,8 @@ void Object::update(const double dt) {
     updateForces(dt);
 }
 
-Object::Object(Model & model, Shader & shader, Texture & texture) :
-    model(model), shader(shader), texture(texture), id(getNextId()) { }
+Object::Object(std::shared_ptr<Model> model, Shader & shader, std::shared_ptr<Texture> texture) :
+    model(std::move(model)), shader(shader), texture(std::move(texture)), id(getNextId()) { }
 
 unsigned int Object::getNextId() {
     return ++objectCount;
@@ -139,8 +140,8 @@ void Object::setColor(float r, float g, float b) {
     setColor({r, g, b});
 }
 
-Object::Builder & Object::Builder::setModel(Model & newModel) {
-    model = &newModel;
+Object::Builder & Object::Builder::setModel(std::shared_ptr<Model> newModel) {
+    model = std::move(newModel);
     return *this;
 }
 
@@ -149,8 +150,8 @@ Object::Builder & Object::Builder::setShader(Shader & newShader) {
     return *this;
 }
 
-Object::Builder & Object::Builder::emplaceObject(Model & model, Shader & shader, Texture & texture) {
-    return setModel(model).setTexture(texture).setShader(shader);
+Object::Builder & Object::Builder::emplaceObject(std::shared_ptr<Model> model, Shader & shader, std::shared_ptr<Texture> texture) {
+    return setModel(std::move(model)).setTexture(std::move(texture)).setShader(shader);
 }
 
 Object::Builder & Object::Builder::setRotation(float newDegree, glm::vec3 axis) {
@@ -195,7 +196,7 @@ Object Object::Builder::build() {
         throw std::runtime_error("ObjectBuilder error: Missing value '" + std::string(model ? "shader" : "model") + "'");
     }
 
-    Object obj { *model, *shader, *texture };
+    Object obj { std::move(model), *shader, std::move(texture) };
     obj.translate(position);
     if (rotationAxis.x or rotationAxis.y or rotationAxis.z) {
         obj.rotate(degree, rotationAxis);
@@ -217,8 +218,8 @@ Object::Builder & Object::Builder::setColor(float r, float g, float b) {
     return setColor({r, g, b});
 }
 
-Object::Builder & Object::Builder::setTexture(Texture & tex) {
-    texture = &tex;
+Object::Builder & Object::Builder::setTexture(std::shared_ptr<Texture> tex) {
+    texture = std::move(tex);
     return *this;
 }
 

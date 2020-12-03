@@ -30,9 +30,9 @@ TextureNotFoundException::TextureNotFoundException(const std::string & msg) noex
 TextureAlreadyExistsException::TextureAlreadyExistsException(const std::string & msg) noexcept : std::runtime_error(msg) { }
 
 
-std::unordered_map<std::string, Texture> TextureManager::map;
+std::unordered_map<std::string, std::shared_ptr<Texture>> TextureManager::map;
 
-Texture & TextureManager::get(const std::string & texture) {
+std::shared_ptr<Texture> TextureManager::get(const std::string & texture) {
     auto iter = map.find(texture);
 
     if (iter != map.end()) {
@@ -42,8 +42,8 @@ Texture & TextureManager::get(const std::string & texture) {
     throw TextureNotFoundException("No such texture found: '" + texture + "'");
 }
 
-Texture & TextureManager::emplace(const std::string & texture, const std::string & texturePath) {
-    Texture tex { texturePath };
+std::shared_ptr<Texture> TextureManager::emplace(const std::string & texture, const std::string & texturePath) {
+    auto tex = std::make_shared<Texture>(texturePath);
 
     auto retval = map.emplace(std::make_pair(texture, tex));
     if (not retval.second) {
@@ -53,7 +53,7 @@ Texture & TextureManager::emplace(const std::string & texture, const std::string
     return retval.first->second;
 }
 
-Texture & TextureManager::getOrEmplace(const std::string & texture, const std::string & texturePath) {
+std::shared_ptr<Texture> TextureManager::getOrEmplace(const std::string & texture, const std::string & texturePath) {
 
     auto iter = map.find(texture);
 
@@ -61,7 +61,7 @@ Texture & TextureManager::getOrEmplace(const std::string & texture, const std::s
         return iter->second;
     }
 
-    Texture tex { texturePath };
+    auto tex = std::make_shared<Texture>(texturePath);
     return map.emplace(std::make_pair(texture, tex)).first->second;
 }
 

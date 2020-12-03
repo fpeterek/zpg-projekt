@@ -15,7 +15,6 @@ add_executable(
         src/object.cpp
         src/camera.cpp
         src/mouse.cpp
-        src/models.cpp
         src/light.cpp
         src/model.cpp
         src/scene.cpp

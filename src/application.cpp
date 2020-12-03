@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include "models.hpp"
 
 Application * Application::application = nullptr;
 
@@ -290,39 +289,16 @@ Application::Application() {
         .emplaceAmbientLight(glm::vec3 { .1f })
         .addObject(
             objBuilder
-            .emplaceObject(models::sphere(), ShaderManager::constant(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
-            .setPosition(5.f, 0.f, 0.f).build()
-        )
-        .addObject(
-            objBuilder
-            .emplaceObject(models::sphere(), ShaderManager::lambert(), TextureManager::get("grass"))
-            .setPosition(-5.f, 0.f, 0.f).build()
-        )
-        .addObject(
-            objBuilder
-            .emplaceObject(models::sphere(), ShaderManager::phong(), TextureManager::get("grass"))
+            .emplaceObject(ModelLoader::get("tree/lowpoyltree"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
             .setPosition(0.f, 0.f, 5.f).build()
         )
         .addObject(
             objBuilder
-            .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
-            .setPosition(0.f, 0.f, -5.f).build()
-        )
-        .addObject(
-            objBuilder
-            .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
-            .setPosition(0.f, 5.f, 0.f).build()
-        )
-        .addObject(
-            objBuilder
-            .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
-            .setPosition(0.f, -5.f, 0.f).build()
-        )
-        .addObject(
-            objBuilder
-            .emplaceObject(models::plain(), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
-            .setScale(8, 1, 8)
+            .emplaceObject(ModelLoader::get("a380_alt/11803_Airplane_v1_l1"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+            .setPosition(0.f, 0.f, -5.f).setScale(0.005f, 0.005f, 0.005f)
+            .setRotation(-M_PI/2, glm::vec3 { 1.f, 0.f, 0.f })
             .build()
+
         )
         .setCameraPosition(0.f, 1.f, 3.f)
         .build();
@@ -403,12 +379,12 @@ void Application::emplaceObject(const int mouseX, const int mouseY) {
     glm::vec4 viewport { 0, 0, bufferWidth, bufferHeight };
     auto pos = glm::unProject(screenX, scene().camera.view(), scene().camera.project(), viewport);
 
-    scene().objects.emplace_back(
+    /*scene().objects.emplace_back(
         Object::Builder()
             .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
             .setPosition(pos)
             .build()
-    );
+    );*/
 }
 
 

@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <exception>
 #include <stdexcept>
+#include <memory>
 
 #include <GL/glew.h>
 
@@ -41,13 +42,13 @@ public:
 };
 
 class TextureManager {
-    static std::unordered_map<std::string, Texture> map;
+    static std::unordered_map<std::string, std::shared_ptr<Texture>> map;
 
 public:
 
-    static Texture & emplace(const std::string & texture, const std::string & texturePath);
-    static Texture & getOrEmplace(const std::string & texture, const std::string & texturePath);
-    static Texture & get(const std::string & texture);
+    static std::shared_ptr<Texture> emplace(const std::string & texture, const std::string & texturePath);
+    static std::shared_ptr<Texture> getOrEmplace(const std::string & texture, const std::string & texturePath);
+    static std::shared_ptr<Texture> get(const std::string & texture);
 
 };
 
