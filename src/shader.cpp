@@ -135,18 +135,18 @@ void Shader::updatePosition(const glm::vec3 & position) {
     passUniformLocation("cameraPosition", position);
 }
 
-void Shader::colorChanged(glm::vec3 color, size_t lightIndex, LightType lightType) {
-    if (lightType == LightType::Ambient) {
+void Shader::colorChanged(glm::vec3 color, size_t lightIndex, gl::Light lightType) {
+    if (lightType == gl::Light::Ambient) {
         passUniformLocation("ambientColor", color);
-    } else if (lightType == LightType::Default or lightType == LightType::Directional) {
+    } else if (lightType == gl::Light::Point or lightType == gl::Light::Directional) {
         passUniformLocation("lights[" + std::to_string(lightIndex) + "].lightColor", color);
     }
 }
 
-void Shader::positionChanged(glm::vec3 position, size_t lightIndex, LightType lightType) {
-    if (lightType == LightType::Ambient) {
+void Shader::positionChanged(glm::vec3 position, size_t lightIndex, gl::Light lightType) {
+    if (lightType == gl::Light::Ambient) {
         /* noop -> ambient light has no coordinates */
-    } else if (lightType == LightType::Default or lightType == LightType::Directional) {
+    } else if (lightType == gl::Light::Point or lightType == gl::Light::Directional) {
         passUniformLocation("lights[" + std::to_string(lightIndex) + "].position", position);
     }
 }
@@ -164,6 +164,24 @@ void Shader::passUniformLocation(const char * var, const int32_t value) const {
 
 void Shader::typeChanged(gl::Light type, size_t lightIndex) {
     passUniformLocation("lights[" + std::to_string(lightIndex) + "].lightType", int32_t(type));
+}
+
+void Shader::notify(EventType eventType, void * object) {
+    if (eventType == EventType::LightChanged) {
+
+        ColoredLight & light = *(ColoredLight*)object;
+
+        colorChanged(light.getColor(), light.lightIndex, light.type());
+        typeChanged(light.type(), light.lightIndex);
+
+        if (light.type() == gl::Light::Point) {
+            PositionedLight & l = *(PositionedLight*)object;
+            positionChanged(l.getPosition(), l.lightIndex, l.type());
+        } else if (light.type() == gl::Light::Directional) {
+            DirectionalLight & l = *(DirectionalLight*)object;
+            positionChanged(l.getDirection(), l.lightIndex, l.type());
+        }
+    }
 }
 
 ShaderManager & ShaderManager::instance() {

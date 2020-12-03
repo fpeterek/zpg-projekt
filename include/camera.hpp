@@ -16,7 +16,7 @@
 #include "mouse.hpp"
 
 
-class Camera : MouseObserver {
+class Camera : public Observer {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
     glm::vec3 eye { 0.f, 1.f, 3.f };
@@ -65,7 +65,8 @@ public:
 
     void apply();
 
-    void onMouseMove(const MouseData & md) override;
+    void onMouseMove(const MouseData & md);
+    void notify(EventType eventType, void * object) override;
 
     glm::mat4 view() const;
     glm::mat4 project() const;

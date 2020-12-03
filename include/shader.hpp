@@ -14,7 +14,7 @@
 #include "camera_observer.hpp"
 #include "light.hpp"
 
-class Shader : public CameraObserver, public LightObserver {
+class Shader : public Observer, public CameraObserver {
 
     GLuint vertexId;
     GLuint fragmentId;
@@ -49,9 +49,11 @@ public:
     void updateProjection(const glm::mat4 & projection) override;
     void updatePosition(const glm::vec3 & position) override;
 
-    void colorChanged(glm::vec3 color, size_t lightIndex, LightType lightType) override;
-    void positionChanged(glm::vec3 position, size_t lightIndex, LightType lightType) override;
-    void typeChanged(gl::Light type, size_t lightIndex) override;
+    void colorChanged(glm::vec3 color, size_t lightIndex, gl::Light lightType);
+    void positionChanged(glm::vec3 position, size_t lightIndex, gl::Light lightType);
+    void typeChanged(gl::Light type, size_t lightIndex);
+
+    void notify(EventType eventType, void * object) override;
 };
 
 class ShaderManager {

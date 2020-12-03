@@ -24,27 +24,19 @@ void ColoredLight::addColor(glm::vec3 delta) const {
 
 void ColoredLight::setColor(const glm::vec3 newColor) const {
     color = boundColor(newColor);
-    onColorChanged(LightType::Ambient);
-}
-
-void ColoredLight::addObserver(LightObserver & observer) {
-    observers.emplace_back(std::reference_wrapper(observer));
-}
-
-void ColoredLight::onColorChanged(const LightType lightType) const {
-    for (auto obs : observers) {
-        obs.get().colorChanged(color, 0, lightType);
-    }
+    apply();
 }
 
 void ColoredLight::apply() const {
-    for (auto obs : observers) {
-        obs.get().colorChanged(color, 0, LightType::Ambient);
-    }
+    notify(EventType::LightChanged, (void*)this);
 }
 
 gl::Light ColoredLight::type() const {
     return gl::Light::Ambient;
+}
+
+glm::vec3 ColoredLight::getColor() const {
+    return color;
 }
 
 PositionedLight::PositionedLight() : ColoredLight() { }
@@ -57,36 +49,24 @@ void PositionedLight::move(const glm::vec3 delta) const {
 
 void PositionedLight::setPosition(const glm::vec3 newPos) const {
     position = newPos;
-    onPositionChanged(LightType::Default);
+    apply();
 }
 
 void PositionedLight::setColor(const glm::vec3 newColor) const {
     color = boundColor(newColor);
-    onColorChanged(LightType::Default);
-}
-
-void PositionedLight::onPositionChanged(const LightType lightType) const {
-    for (auto obs : observers) {
-        obs.get().positionChanged(position, lightIndex, lightType);
-    }
+    apply();
 }
 
 void PositionedLight::apply() const {
-    for (auto obs : observers) {
-        obs.get().colorChanged(color, lightIndex, LightType::Default);
-        obs.get().positionChanged(position, lightIndex, LightType::Default);
-        obs.get().typeChanged(type(), lightIndex);
-    }
+    notify(EventType::LightChanged, (void*)this);
 }
 
 gl::Light PositionedLight::type() const {
     return gl::Light::Point;
 }
 
-void DirectionalLight::onDirectionChange(LightType lightType) const {
-    for (auto obs : observers) {
-        obs.get().positionChanged(direction, lightIndex, lightType);
-    }
+glm::vec3 PositionedLight::getPosition() const {
+    return position;
 }
 
 DirectionalLight::DirectionalLight() : ColoredLight() { }
@@ -100,22 +80,22 @@ void DirectionalLight::move(const glm::vec3 delta) const {
 
 void DirectionalLight::setDirection(const glm::vec3 newDirection) const {
     direction = newDirection;
-    onDirectionChange(LightType::Directional);
+    apply();
 }
 
 void DirectionalLight::setColor(const glm::vec3 newColor) const {
     color = boundColor(newColor);
-    onColorChanged(LightType::Directional);
+    apply();
 }
 
 void DirectionalLight::apply() const {
-    for (auto obs : observers) {
-        obs.get().colorChanged(color, lightIndex, LightType::Directional);
-        obs.get().positionChanged(direction, lightIndex, LightType::Directional);
-        obs.get().typeChanged(type(), lightIndex);
-    }
+    notify(EventType::LightChanged, (void*)this);
 }
 
 gl::Light DirectionalLight::type() const {
     return gl::Light::Directional;
+}
+
+glm::vec3 DirectionalLight::getDirection() const {
+    return direction;
 }

@@ -138,3 +138,9 @@ glm::mat4 Camera::project() const {
     return projection;
 }
 
+void Camera::notify(EventType eventType, void * object) {
+    if (eventType == EventType::MouseMoved) {
+        onMouseMove(((Mouse*)object)->data());
+    }
+}
+

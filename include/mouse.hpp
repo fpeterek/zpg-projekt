@@ -10,36 +10,25 @@
 #include <vector>
 #include <memory>
 
+#include "observer.hpp"
+
 struct MouseData {
-    const int x;
-    const int y;
-    const int dx;
-    const int dy;
-    const uint8_t buttons;
+    int x;
+    int y;
+    int dx;
+    int dy;
+    uint8_t buttons;
 
     bool lbPressed() const;
     bool mbPressed() const;
     bool rbPressed() const;
 
+    MouseData();
     MouseData(int x, int y, int dx, int dy, uint8_t buttons);
 
 };
 
-
-class MouseObserver {
-
-public:
-
-    MouseObserver();
-    ~MouseObserver();
-
-    virtual void onButtonPress(const MouseData & mouseData);
-    virtual void onButtonRelease(const MouseData & mouseData);
-    virtual void onMouseMove(const MouseData & mouseData);
-};
-
-
-class Mouse {
+class Mouse : public Observable {
 
     static Mouse * mouse;
 
@@ -47,18 +36,9 @@ class Mouse {
     int y = 0;
     uint8_t pressed = 0;
 
-    std::vector<std::reference_wrapper<MouseObserver>> observers;
+    MouseData current;
 
     Mouse();
-
-    enum class Action {
-        Press,
-        Release,
-        Move,
-        None
-    };
-
-    void notifyObservers(Action action, const MouseData & md);
 
 public:
 
@@ -69,13 +49,12 @@ public:
         Other = 0b1000
     };
 
-    void registerObserver(MouseObserver & observer);
-    void removeObserver(MouseObserver & observer);
-
     void buttonPress(Button button);
     void buttonRelease(Button button);
 
     void mouseMove(int x, int y);
+
+    const MouseData & data() const;
 
     static Mouse & instance();
 };

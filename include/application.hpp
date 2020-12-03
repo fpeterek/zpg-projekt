@@ -24,7 +24,7 @@
 #include "light.hpp"
 #include "scene.hpp"
 
-class Application : MouseObserver {
+class Application : public Observer {
 
     Mouse & mouse = Mouse::instance();
 
@@ -58,7 +58,8 @@ class Application : MouseObserver {
     bool hasSelected();
     Object & getSelected();
 
-    void onButtonPress(const MouseData & mouseData) override;
+    void onButtonPress(const MouseData & mouseData);
+    void notify(EventType eventType, void * object) override;
 
     void initCallbacks();
 

@@ -19,6 +19,6 @@ add_executable(
         src/model.cpp
         src/scene.cpp
         src/texture.cpp
-)
+        src/observer.cpp)
 
 file(COPY resources DESTINATION .)

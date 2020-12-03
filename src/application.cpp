@@ -308,6 +308,7 @@ Application::Application() {
 Application & Application::instance() {
     if (not application) {
         application = new Application();
+        Mouse::instance().registerObserver(*application);
     }
     return *application;
 }
@@ -385,6 +386,12 @@ void Application::emplaceObject(const int mouseX, const int mouseY) {
             .setPosition(pos)
             .build()
     );*/
+}
+
+void Application::notify(EventType eventType, void * object) {
+    if (eventType == EventType::MouseButtonPressed) {
+        onButtonPress(((Mouse*)object)->data());
+    }
 }
 
 

@@ -10,6 +10,8 @@
 
 #include <glm/vec3.hpp>
 
+#include "observer.hpp"
+
 enum class LightType {
     Default,
     Directional,
@@ -31,14 +33,11 @@ struct LightObserver {
     virtual void typeChanged(gl::Light type, size_t lightIndex) = 0;
 };
 
-class ColoredLight {
+class ColoredLight : public Observable {
 
 protected:
 
     mutable glm::vec3 color { 1.f };
-    std::vector<std::reference_wrapper<LightObserver>> observers;
-
-    void onColorChanged(LightType lightType) const;
 
 public:
     ColoredLight();
@@ -50,16 +49,14 @@ public:
 
     virtual void addColor(glm::vec3 delta) const;
     virtual void setColor(glm::vec3 color) const;
+    glm::vec3 getColor() const;
 
-    virtual void addObserver(LightObserver & observer);
     virtual void apply() const;
 
 };
 
 class PositionedLight : public ColoredLight {
     mutable glm::vec3 position { 0.f };
-
-    void onPositionChanged(LightType lightType) const;
 
 public:
 
@@ -72,6 +69,7 @@ public:
     void setPosition(glm::vec3 newPos) const;
 
     void setColor(glm::vec3 color) const override;
+    glm::vec3 getPosition() const;
 
     void apply() const override;
 };
@@ -81,8 +79,6 @@ typedef ColoredLight AmbientLight;
 
 class DirectionalLight : public ColoredLight {
     mutable glm::vec3 direction { 0.f };
-
-    void onDirectionChange(LightType lightType) const;
 
 public:
 
@@ -95,6 +91,7 @@ public:
     void setDirection(glm::vec3 newDirection) const;
 
     void setColor(glm::vec3 color) const override;
+    glm::vec3 getDirection() const;
 
     void apply() const override;
 };

@@ -87,10 +87,10 @@ static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos, const g
                          std::vector<std::shared_ptr<ColoredLight>> & vec) {
 
     auto light = createLight(color, pos, type);
-    light->addObserver(ShaderManager::constant());
-    light->addObserver(ShaderManager::lambert());
-    light->addObserver(ShaderManager::phong());
-    light->addObserver(ShaderManager::blinn());
+    light->registerObserver(ShaderManager::constant());
+    light->registerObserver(ShaderManager::lambert());
+    light->registerObserver(ShaderManager::phong());
+    light->registerObserver(ShaderManager::blinn());
     light->lightIndex = vec.size();
     vec.emplace_back(light);
 
@@ -134,10 +134,10 @@ Scene::Builder & Scene::Builder::emplaceLight(glm::vec3 color, glm::vec3 positio
 
 Scene::Builder & Scene::Builder::emplaceAmbientLight(glm::vec3 color) {
     ambientLight = AmbientLight { color };
-    ambientLight.addObserver(ShaderManager::constant());
-    ambientLight.addObserver(ShaderManager::lambert());
-    ambientLight.addObserver(ShaderManager::phong());
-    ambientLight.addObserver(ShaderManager::blinn());
+    ambientLight.registerObserver(ShaderManager::constant());
+    ambientLight.registerObserver(ShaderManager::lambert());
+    ambientLight.registerObserver(ShaderManager::phong());
+    ambientLight.registerObserver(ShaderManager::blinn());
     return *this;
 }
 
@@ -148,6 +148,7 @@ Scene * Scene::Builder::build() {
     scene->camera.addObserver(ShaderManager::lambert());
     scene->camera.addObserver(ShaderManager::phong());
     scene->camera.addObserver(ShaderManager::blinn());
+    Mouse::instance().registerObserver(scene->camera);
 
     reset();
     return scene;
