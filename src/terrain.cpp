@@ -6,7 +6,7 @@
 
 #include <glm/gtc/noise.hpp>
 
-constexpr float distance = 0.25;
+constexpr float distance = 0.5;
 
 static std::vector<Terrain::Vertex> triangulateAndFlatten(const std::vector<std::vector<Terrain::Vertex>> & vertices) {
 
@@ -45,7 +45,7 @@ static std::vector<std::vector<Terrain::Vertex>> generateVertices(uint32_t width
 
             const float x = (v - w_offset) * distance;
             const float z = (i - l_offset) * distance;
-            const float y = glm::perlin(glm::vec2 {x, z});
+            const float y = 1; // 2 * glm::perlin(glm::vec2 {x, z});
 
             vert.position = { x, y, z };
         }
@@ -104,7 +104,7 @@ void Terrain::initVao() {
     using type = decltype(vertices)::value_type;
     constexpr int typeSize = sizeof(type);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, typeSize, nullptr);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, typeSize, (GLvoid*)(typeSize));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, typeSize, (GLvoid*)(sizeof(type::position)));
 }
 
 void Terrain::draw() {
