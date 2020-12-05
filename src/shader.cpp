@@ -9,6 +9,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "camera.hpp"
 
 std::string Shader::loadShader(const std::string & filename) {
 
@@ -181,6 +182,11 @@ void Shader::notify(EventType eventType, void * object) {
             DirectionalLight & l = *(DirectionalLight*)object;
             positionChanged(l.getDirection(), l.lightIndex, l.type());
         }
+    } else if (eventType == EventType::CameraMoved) {
+        Camera & camera = *((Camera*)object);
+        updateView(camera.view());
+        updatePosition(camera.position());
+        updateProjection(camera.projection());
     }
 }
 

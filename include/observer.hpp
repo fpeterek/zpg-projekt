@@ -29,7 +29,7 @@ public:
 
     void registerObserver(Observer & obs);
     void removeObserver(Observer & obs);
-    void notify(EventType type, void * obj) const;
+    void notifyObservers(EventType type, void * obj) const;
 
 };
 

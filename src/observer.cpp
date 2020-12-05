@@ -19,7 +19,7 @@ void Observable::removeObserver(Observer & obs) {
     }
 }
 
-void Observable::notify(EventType type, void * obj) const {
+void Observable::notifyObservers(EventType type, void * obj) const {
     for (Observer * obs : observers) {
         obs->notify(type, obj);
     }

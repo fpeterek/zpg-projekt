@@ -32,7 +32,7 @@ void Mouse::buttonPress(const Button button) {
 
     current = MouseData(x, y, 0, 0, pressed);
 
-    notify(EventType::MouseButtonPressed, this);
+    notifyObservers(EventType::MouseButtonPressed, this);
 }
 
 void Mouse::buttonRelease(const Button button) {
@@ -40,7 +40,7 @@ void Mouse::buttonRelease(const Button button) {
 
     current = MouseData(x, y, 0, 0, pressed);
 
-    notify(EventType::MouseButtonReleased, this);
+    notifyObservers(EventType::MouseButtonReleased, this);
 }
 
 Mouse & Mouse::instance() {
@@ -60,7 +60,7 @@ void Mouse::mouseMove(const int nx, const int ny) {
 
     current = MouseData(x, y, dx, dy, pressed);
 
-    notify(EventType::MouseMoved, this);
+    notifyObservers(EventType::MouseMoved, this);
 }
 
 const MouseData & Mouse::data() const {

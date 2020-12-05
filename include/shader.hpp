@@ -11,10 +11,9 @@
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 
-#include "camera_observer.hpp"
 #include "light.hpp"
 
-class Shader : public Observer, public CameraObserver {
+class Shader : public Observer {
 
     GLuint vertexId;
     GLuint fragmentId;
@@ -45,9 +44,9 @@ public:
     void passUniformLocation(const std::string & var, int32_t value) const;
     void passUniformLocation(const char * var, int32_t value) const;
 
-    void updateView(const glm::mat4 & view) override;
-    void updateProjection(const glm::mat4 & projection) override;
-    void updatePosition(const glm::vec3 & position) override;
+    void updateView(const glm::mat4 & view);
+    void updateProjection(const glm::mat4 & projection);
+    void updatePosition(const glm::vec3 & position);
 
     void colorChanged(glm::vec3 color, size_t lightIndex, gl::Light lightType);
     void positionChanged(glm::vec3 position, size_t lightIndex, gl::Light lightType);

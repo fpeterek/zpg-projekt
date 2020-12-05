@@ -28,7 +28,7 @@ void ColoredLight::setColor(const glm::vec3 newColor) const {
 }
 
 void ColoredLight::apply() const {
-    notify(EventType::LightChanged, (void*)this);
+    notifyObservers(EventType::LightChanged, (void *) this);
 }
 
 gl::Light ColoredLight::type() const {
@@ -58,7 +58,7 @@ void PositionedLight::setColor(const glm::vec3 newColor) const {
 }
 
 void PositionedLight::apply() const {
-    notify(EventType::LightChanged, (void*)this);
+    notifyObservers(EventType::LightChanged, (void *) this);
 }
 
 gl::Light PositionedLight::type() const {
@@ -89,7 +89,7 @@ void DirectionalLight::setColor(const glm::vec3 newColor) const {
 }
 
 void DirectionalLight::apply() const {
-    notify(EventType::LightChanged, (void*)this);
+    notifyObservers(EventType::LightChanged, (void *) this);
 }
 
 gl::Light DirectionalLight::type() const {

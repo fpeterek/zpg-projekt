@@ -144,10 +144,10 @@ Scene::Builder & Scene::Builder::emplaceAmbientLight(glm::vec3 color) {
 Scene * Scene::Builder::build() {
     auto * scene = new Scene { std::move(objects), ambientLight, lights, cameraPos };
 
-    scene->camera.addObserver(ShaderManager::constant());
-    scene->camera.addObserver(ShaderManager::lambert());
-    scene->camera.addObserver(ShaderManager::phong());
-    scene->camera.addObserver(ShaderManager::blinn());
+    scene->camera.registerObserver(ShaderManager::constant());
+    scene->camera.registerObserver(ShaderManager::lambert());
+    scene->camera.registerObserver(ShaderManager::phong());
+    scene->camera.registerObserver(ShaderManager::blinn());
     Mouse::instance().registerObserver(scene->camera);
 
     reset();

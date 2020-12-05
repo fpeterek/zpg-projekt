@@ -15,12 +15,7 @@ void Camera::updateCameraMatrix() {
 }
 
 void Camera::apply() {
-
-    for (auto ref : observers) {
-        ref.get().updateView(camera);
-        ref.get().updateProjection(projection);
-        ref.get().updatePosition(eye);
-    }
+    notifyObservers(EventType::CameraMoved, this);
 }
 
 void Camera::moveSideways(Direction dir) {
@@ -119,10 +114,6 @@ void Camera::onMouseMove(const MouseData & md) {
 
 }
 
-void Camera::addObserver(CameraObserver & obs) {
-    observers.emplace_back(obs);
-}
-
 void Camera::setPosition(glm::vec3 pos) {
     eye = pos;
     calcTarget();
@@ -134,13 +125,17 @@ glm::mat4 Camera::view() const {
     return camera;
 }
 
-glm::mat4 Camera::project() const {
-    return projection;
+glm::mat4 Camera::projection() const {
+    return projectMat;
 }
 
 void Camera::notify(EventType eventType, void * object) {
     if (eventType == EventType::MouseMoved) {
         onMouseMove(((Mouse*)object)->data());
     }
+}
+
+glm::vec3 Camera::position() const {
+    return eye;
 }
 

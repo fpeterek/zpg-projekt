@@ -16,14 +16,12 @@
 #include "mouse.hpp"
 
 
-class Camera : public Observer {
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+class Camera : public Observer, public Observable {
+    glm::mat4 projectMat = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
     glm::vec3 eye { 0.f, 1.f, 3.f };
     glm::vec3 target { 0.f };
     glm::vec3 up { 0.f, 1.f, 0.f };
-
-    std::vector<std::reference_wrapper<CameraObserver>> observers;
 
     float fi = 1.5f * M_PI;
     float psi = 0.f;
@@ -52,8 +50,6 @@ class Camera : public Observer {
 public:
     Camera();
 
-    void addObserver(CameraObserver & obs);
-
     void setPosition(glm::vec3 pos);
 
     void moveSideways(Direction dir);
@@ -69,7 +65,8 @@ public:
     void notify(EventType eventType, void * object) override;
 
     glm::mat4 view() const;
-    glm::mat4 project() const;
+    glm::mat4 projection() const;
+    glm::vec3 position() const;
 };
 
 #endif //ZPG_PROJEKT_CAMERA_HPP

@@ -378,7 +378,7 @@ void Application::emplaceObject(const int mouseX, const int mouseY) {
 
     glm::vec3 screenX = glm::vec3 { x, y, depth };
     glm::vec4 viewport { 0, 0, bufferWidth, bufferHeight };
-    auto pos = glm::unProject(screenX, scene().camera.view(), scene().camera.project(), viewport);
+    auto pos = glm::unProject(screenX, scene().camera.view(), scene().camera.projection(), viewport);
 
     /*scene().objects.emplace_back(
         Object::Builder()
