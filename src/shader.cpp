@@ -204,7 +204,8 @@ ShaderManager::ShaderManager() :
     _lambert("resources/shaders/shader.vert", "resources/shaders/lambert.frag"),
     _phong("resources/shaders/shader.vert", "resources/shaders/phong.frag"),
     _blinn("resources/shaders/shader.vert", "resources/shaders/blinn.frag"),
-    _skybox("resources/shaders/skybox.vert", "resources/shaders/skybox.frag") { }
+    _skybox("resources/shaders/skybox.vert", "resources/shaders/skybox.frag"),
+    _terrain("resources/shaders/terrain.vert", "resources/shaders/terrain.frag") { }
 
 Shader & ShaderManager::constant() {
     return instance()._constant;
@@ -224,4 +225,8 @@ Shader & ShaderManager::blinn() {
 
 Shader & ShaderManager::skybox() {
     return instance()._skybox;
+}
+
+Shader & ShaderManager::terrain() {
+    return instance()._terrain;
 }

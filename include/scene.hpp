@@ -11,16 +11,18 @@
 #include "light.hpp"
 #include "camera.hpp"
 #include "skybox.hpp"
+#include "terrain.hpp"
 
 
 class Scene {
 
     Scene(std::vector<Object> objects, AmbientLight ambientLight,
           std::vector<std::shared_ptr<ColoredLight>> light, glm::vec3 cameraPos,
-          std::shared_ptr<Skybox> skybox);
+          std::shared_ptr<Skybox> skybox, Terrain terrain);
 
     std::vector<std::shared_ptr<ColoredLight>> lights;
     std::shared_ptr<Skybox> skybox;
+    Terrain terrain;
 
     void applyLights() const;
     void setShaderCount() const;
@@ -56,6 +58,7 @@ public:
         AmbientLight ambientLight;
         std::vector<std::shared_ptr<ColoredLight>> lights;
         glm::vec3 cameraPos { 0.f };
+        std::optional<Terrain> terrain;
 
         void reset();
 
@@ -70,6 +73,8 @@ public:
 
         Builder & addAll(const std::vector<Object> & objects);
         Builder & addObject(const Object & object);
+
+        Builder & createTerrain(uint32_t width, uint32_t length);
 
         Scene * build();
     };

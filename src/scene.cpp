@@ -8,6 +8,7 @@
 void Scene::update(const double dt) {
     camera.update(dt);
     skybox->draw();
+    terrain.draw();
     for (Object & obj : objects) {
         obj.update(dt);
         obj.draw();
@@ -32,9 +33,9 @@ void Scene::addAll(const std::vector<Object> & vector) {
 
 Scene::Scene(std::vector<Object> objects, AmbientLight ambientLight,
              std::vector<std::shared_ptr<ColoredLight>> lights, glm::vec3 cameraPos,
-             std::shared_ptr<Skybox> skybox) :
+             std::shared_ptr<Skybox> skybox, Terrain terrain) :
     objects(std::move(objects)), ambientLight(std::move(ambientLight)), lights(std::move(lights)),
-    skybox(std::move(skybox)) {
+    skybox(std::move(skybox)), terrain(std::move(terrain)) {
 
     init();
     camera.setPosition(cameraPos);
@@ -108,6 +109,7 @@ void Scene::setShaderCount() const {
     ShaderManager::lambert().passUniformLocation("lightCount", lights.size());
     ShaderManager::blinn().passUniformLocation("lightCount", lights.size());
     ShaderManager::phong().passUniformLocation("lightCount", lights.size());
+    ShaderManager::terrain().passUniformLocation("lightCount", lights.size());
 }
 
 void Scene::Builder::reset() {
@@ -116,6 +118,7 @@ void Scene::Builder::reset() {
     lights = { };
     // emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f }, gl::Light::Point);
     cameraPos = { 0.f, 0.f, 0.f };
+    terrain.reset();
 }
 
 Scene::Builder & Scene::Builder::addAll(const std::vector<Object> & vector) {
@@ -141,6 +144,7 @@ Scene::Builder & Scene::Builder::emplaceAmbientLight(glm::vec3 color) {
     ambientLight.registerObserver(ShaderManager::lambert());
     ambientLight.registerObserver(ShaderManager::phong());
     ambientLight.registerObserver(ShaderManager::blinn());
+    ambientLight.registerObserver(ShaderManager::terrain());
     return *this;
 }
 
@@ -160,12 +164,18 @@ static std::shared_ptr<Skybox> initSkybox() {
 }
 
 Scene * Scene::Builder::build() {
+
+    if (not terrain.has_value()) {
+        createTerrain(500, 500);
+    }
+
     auto * scene = new Scene {
         std::move(objects),
         ambientLight,
         lights,
         cameraPos,
-        initSkybox()
+        initSkybox(),
+        std::move(terrain.value())
     };
 
     scene->camera.registerObserver(ShaderManager::constant());
@@ -173,6 +183,7 @@ Scene * Scene::Builder::build() {
     scene->camera.registerObserver(ShaderManager::phong());
     scene->camera.registerObserver(ShaderManager::blinn());
     scene->camera.registerObserver(ShaderManager::skybox());
+    scene->camera.registerObserver(ShaderManager::terrain());
     Mouse::instance().registerObserver(scene->camera);
 
     reset();
@@ -190,5 +201,10 @@ Scene::Builder & Scene::Builder::setCameraPosition(glm::vec3 position) {
 
 Scene::Builder & Scene::Builder::setCameraPosition(float x, float y, float z) {
     cameraPos = { x, y ,z };
+    return *this;
+}
+
+Scene::Builder & Scene::Builder::createTerrain(uint32_t width, uint32_t length) {
+    terrain.emplace(Terrain::generate(width, length));
     return *this;
 }

@@ -62,6 +62,7 @@ class ShaderManager {
     Shader _phong;
     Shader _blinn;
     Shader _skybox;
+    Shader _terrain;
 
     static ShaderManager * sm;
     static ShaderManager & instance();
@@ -74,6 +75,7 @@ public:
     static Shader & phong();
     static Shader & blinn();
     static Shader & skybox();
+    static Shader & terrain();
 };
 
 

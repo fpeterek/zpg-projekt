@@ -27,7 +27,7 @@ public:
 
     const std::string texturePath;
 
-    explicit Texture(const std::string& texturePath);
+    explicit Texture(const std::string & texturePath);
 
     virtual void bind(Shader & shader) const;
 

@@ -20,6 +20,6 @@ add_executable(
         src/scene.cpp
         src/texture.cpp
         src/observer.cpp
-        src/skybox.cpp)
+        src/skybox.cpp src/terrain.cpp include/terrain.hpp)
 
 file(COPY resources DESTINATION .)
