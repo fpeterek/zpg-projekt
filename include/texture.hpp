@@ -18,15 +18,28 @@
 
 class Texture {
 
+protected:
+
+    Texture(GLuint id, std::string texPath);
     const GLuint textureId;
 
 public:
 
     const std::string texturePath;
 
-    explicit Texture(std::string texturePath);
+    explicit Texture(const std::string& texturePath);
 
-    void bind(Shader & shader) const;
+    virtual void bind(Shader & shader) const;
+
+};
+
+class CubeMap : public Texture {
+
+public:
+    explicit CubeMap(std::string) = delete;
+    explicit CubeMap(const std::vector<std::string> & textures);
+
+    void bind(Shader & shader) const override;
 
 };
 
@@ -49,6 +62,7 @@ public:
     static std::shared_ptr<Texture> emplace(const std::string & texture, const std::string & texturePath);
     static std::shared_ptr<Texture> getOrEmplace(const std::string & texture, const std::string & texturePath);
     static std::shared_ptr<Texture> get(const std::string & texture);
+    static std::shared_ptr<Texture> cubeMap(const std::string & cubemap, const std::vector<std::string> & textures);
 
 };
 

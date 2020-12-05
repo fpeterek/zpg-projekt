@@ -58,6 +58,7 @@ public:
 
     void bindAndDraw(unsigned int id, Shader & shader) const;
 
+    void applyTexture(std::shared_ptr<Texture> texture);
 
 };
 
@@ -76,6 +77,7 @@ class Model {
 public:
 
     void draw(uint32_t id, Shader & shader) const;
+    void applyTexture(const std::shared_ptr<Texture> & texture);
 
 };
 

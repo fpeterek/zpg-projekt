@@ -7,6 +7,7 @@
 
 void Scene::update(const double dt) {
     camera.update(dt);
+    skybox->draw();
     for (Object & obj : objects) {
         obj.update(dt);
         obj.draw();
@@ -30,8 +31,10 @@ void Scene::addAll(const std::vector<Object> & vector) {
 }
 
 Scene::Scene(std::vector<Object> objects, AmbientLight ambientLight,
-             std::vector<std::shared_ptr<ColoredLight>> lights, glm::vec3 cameraPos) :
-    objects(std::move(objects)), ambientLight(std::move(ambientLight)), lights(std::move(lights)) {
+             std::vector<std::shared_ptr<ColoredLight>> lights, glm::vec3 cameraPos,
+             std::shared_ptr<Skybox> skybox) :
+    objects(std::move(objects)), ambientLight(std::move(ambientLight)), lights(std::move(lights)),
+    skybox(std::move(skybox)) {
 
     init();
     camera.setPosition(cameraPos);
@@ -141,13 +144,35 @@ Scene::Builder & Scene::Builder::emplaceAmbientLight(glm::vec3 color) {
     return *this;
 }
 
+static std::vector<std::string> cubemapTextures {
+    "resources/textures/cubemap/posx.jpg",
+    "resources/textures/cubemap/negx.jpg",
+    "resources/textures/cubemap/posy.jpg",
+    "resources/textures/cubemap/negy.jpg",
+    "resources/textures/cubemap/posz.jpg",
+    "resources/textures/cubemap/negz.jpg"
+};
+
+static std::shared_ptr<Skybox> initSkybox() {
+    return std::make_shared<Skybox>(
+        TextureManager::cubeMap("skybox", cubemapTextures)
+    );
+}
+
 Scene * Scene::Builder::build() {
-    auto * scene = new Scene { std::move(objects), ambientLight, lights, cameraPos };
+    auto * scene = new Scene {
+        std::move(objects),
+        ambientLight,
+        lights,
+        cameraPos,
+        initSkybox()
+    };
 
     scene->camera.registerObserver(ShaderManager::constant());
     scene->camera.registerObserver(ShaderManager::lambert());
     scene->camera.registerObserver(ShaderManager::phong());
     scene->camera.registerObserver(ShaderManager::blinn());
+    scene->camera.registerObserver(ShaderManager::skybox());
     Mouse::instance().registerObserver(scene->camera);
 
     reset();

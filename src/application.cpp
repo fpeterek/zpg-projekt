@@ -11,10 +11,13 @@
 Application * Application::application = nullptr;
 
 void Application::errorCallback(int error, const char * description) {
+    (void)error;
     std::cerr << description << std::endl;
 }
 
 void Application::keyCallback(GLFWwindow * win, int key, int scancode, int action, int mods) {
+    (void)scancode;
+    (void)mods;
     if (key == GLFW_KEY_ESCAPE and action == GLFW_PRESS) {
         glfwSetWindowShouldClose(win, GL_TRUE);
     }
@@ -96,14 +99,19 @@ void Application::keyCallback(GLFWwindow * win, int key, int scancode, int actio
 }
 
 void Application::windowFocusCallback(GLFWwindow * win, int focused) {
+    (void)win;
+    (void)focused;
     // std::cout << "window_focus_callback" << std::endl;
 }
 
 void Application::windowIconifyCallback(GLFWwindow * win, int iconified) {
+    (void)win;
+    (void)iconified;
     // std::cout << "window_iconify_callback" << std::endl;
 }
 
 void Application::windowSizeCallback(GLFWwindow * win, int width, int height) {
+    (void)win;
     // std::cout << "resize " << width << ", " << height << std::endl;
     glViewport(0, 0, width, height);
 }
@@ -213,6 +221,7 @@ void Application::initGL() {
     initGLEW();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     printInfo();
 }

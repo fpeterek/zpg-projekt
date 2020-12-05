@@ -10,14 +10,17 @@
 #include "object.hpp"
 #include "light.hpp"
 #include "camera.hpp"
+#include "skybox.hpp"
 
 
 class Scene {
 
     Scene(std::vector<Object> objects, AmbientLight ambientLight,
-          std::vector<std::shared_ptr<ColoredLight>> light, glm::vec3 cameraPos);
+          std::vector<std::shared_ptr<ColoredLight>> light, glm::vec3 cameraPos,
+          std::shared_ptr<Skybox> skybox);
 
     std::vector<std::shared_ptr<ColoredLight>> lights;
+    std::shared_ptr<Skybox> skybox;
 
     void applyLights() const;
     void setShaderCount() const;

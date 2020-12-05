@@ -68,6 +68,9 @@ Mesh::Mesh(Mesh && mesh) noexcept :
     vertices(std::move(mesh.vertices)), indices(std::move(mesh.indices)), texture(std::move(mesh.texture)),
     vbo(mesh.vbo), vao(mesh.vao), ebo(mesh.ebo), material(mesh.material) { }
 
+void Mesh::applyTexture(std::shared_ptr<Texture> tex) {
+    texture = std::move(tex);
+}
 
 std::shared_ptr<Model> ModelLoader::get(const std::string & key) {
 
@@ -242,4 +245,10 @@ void Model::draw(const uint32_t id, Shader & shader) const {
 
 void Model::addMesh(Mesh && mesh) {
     meshes.emplace_back(std::move(mesh));
+}
+
+void Model::applyTexture(const std::shared_ptr<Texture>& texture) {
+    for (auto & mesh : meshes) {
+        mesh.applyTexture(texture);
+    }
 }
