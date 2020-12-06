@@ -5,14 +5,73 @@ in vec3 ex_worldNormal;
 
 out vec4 out_color;
 
+#define MAX_LIGHTS 100
+
+struct Light {
+    vec3 position;
+    vec3 lightColor;
+    int lightType;
+};
+
+uniform Light lights[MAX_LIGHTS];
+uniform int lightCount;
+
+uniform vec3 ambientColor;
+
+
+vec3 point_light(vec3 color, vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 lightColor) {
+
+    float dist = length(lightPosition - worldPos);
+    float attenuation = clamp(5.0 / dist, 0.0, 1.0);
+
+    vec3 lightVector = normalize(lightPosition - vec3(ex_worldPosition));
+
+    float dot_product = max(dot(lightVector, normalVector), 0.0);
+
+    return dot_product * color * attenuation;
+}
+
+vec3 directional_light(vec3 color, vec3 normalVector, vec3 lightDirection, vec3 lightColor) {
+
+    vec3 lightDir = normalize(-lightDirection);
+    float dot_product = max(dot(lightDir, normalVector), 0.0);
+
+    return dot_product * color;
+}
+
 void main() {
-    vec4 green = vec4(0.22, 0.59, 0.32, 1.0);
-    vec4 brown = vec4(0.59, 0.37, 0.22, 1.0);
-    if (ex_worldPosition.y < 4) {
-        out_color = green;
-    } else if (ex_worldPosition.y > 8) {
-        out_color = brown;
+
+    vec3 diffuse = vec3(0.0, 0.0, 0.0);
+
+    vec3 worldPos = vec3(ex_worldPosition);
+    vec3 normalVector = normalize(ex_worldNormal);
+
+    vec3 green = vec3(0.22, 0.59, 0.32);
+    vec3 brown = vec3(0.59, 0.37, 0.22);
+    vec3 color;
+    if (ex_worldPosition.y < 3) {
+        color = green;
+    } else if (ex_worldPosition.y > 7) {
+        color = brown;
     } else {
-        out_color = brown;
+        color = brown;
     }
+
+    for (int index = 0; index < lightCount; ++index) {
+
+        vec3 lightPosition = lights[index].position;
+        vec3 lightColor = lights[index].lightColor;
+
+        vec3 d;
+
+        if (lights[index].lightType == 1) {
+            d = point_light(color, worldPos, normalVector, lightPosition, lightColor);
+        } else if (lights[index].lightType == 2) {
+            d = directional_light(color, normalVector, lightPosition, lightColor);
+        }
+
+        diffuse = diffuse + d;
+    }
+
+    out_color = vec4(ambientColor + diffuse, 1.0);
 }

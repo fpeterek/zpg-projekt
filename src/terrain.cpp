@@ -6,20 +6,25 @@
 
 #include <glm/gtc/noise.hpp>
 
-constexpr float distance = 0.5;
+constexpr float distance = 5;
 
 static std::vector<Terrain::Vertex> triangulateAndFlatten(const std::vector<std::vector<Terrain::Vertex>> & vertices) {
 
     std::vector<Terrain::Vertex> result;
-    result.reserve(vertices.size() * vertices.front().size() * 2);
+    result.reserve(vertices.size() * vertices.front().size() * 6);
 
     const auto width = vertices.size();
     const auto length = vertices.front().size();
 
     for (int x = 0; x < width-1; ++x) {
-        for (int z = 0; z < length; ++z) {
+        for (int z = 0; z < length-1; ++z) {
             result.emplace_back(vertices[x][z]);
             result.emplace_back(vertices[x+1][z]);
+            result.emplace_back(vertices[x+1][z+1]);
+
+            result.emplace_back(vertices[x][z]);
+            result.emplace_back(vertices[x][z+1]);
+            result.emplace_back(vertices[x+1][z+1]);
         }
     }
 
@@ -32,20 +37,23 @@ static std::vector<std::vector<Terrain::Vertex>> generateVertices(uint32_t width
     std::vector<std::vector<Terrain::Vertex>> vertices;
     vertices.reserve(width);
 
-    const float w_offset = width * distance;
-    const float l_offset = length * distance;
+    const float w_offset = (width*0.5f) * distance;
+    const float l_offset = (length*0.5f) * distance;
 
     for (uint32_t v = 0; v < width; ++v) {
         vertices.emplace_back();
         auto & vec = vertices.back();
         vec.reserve(length);
+
+        const float x = v*distance - w_offset;
+
         for (uint32_t i = 0; i < length; ++i) {
             vec.emplace_back();
             auto & vert = vec.back();
 
-            const float x = (v - w_offset) * distance;
-            const float z = (i - l_offset) * distance;
-            const float y = 1; // 2 * glm::perlin(glm::vec2 {x, z});
+
+            const float z = i*distance - l_offset;
+            const float y = 10 * glm::perlin(glm::vec2 {v/(float)width, i/(float)length});
 
             vert.position = { x, y, z };
         }

@@ -95,6 +95,7 @@ static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos, const g
     light->registerObserver(ShaderManager::lambert());
     light->registerObserver(ShaderManager::phong());
     light->registerObserver(ShaderManager::blinn());
+    light->registerObserver(ShaderManager::terrain());
     light->lightIndex = vec.size();
     vec.emplace_back(light);
 
@@ -166,7 +167,7 @@ static std::shared_ptr<Skybox> initSkybox() {
 Scene * Scene::Builder::build() {
 
     if (not terrain.has_value()) {
-        createTerrain(500, 500);
+        createTerrain(200, 200);
     }
 
     auto * scene = new Scene {
