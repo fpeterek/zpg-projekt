@@ -89,7 +89,7 @@ void DirectionalLight::setColor(const glm::vec3 newColor) const {
 }
 
 void DirectionalLight::apply() const {
-    notifyObservers(EventType::LightChanged, (void *) this);
+    notifyObservers(EventType::LightChanged, (void *)this);
 }
 
 gl::Light DirectionalLight::type() const {

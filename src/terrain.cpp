@@ -6,7 +6,7 @@
 
 #include <glm/gtc/noise.hpp>
 
-constexpr float distance = 5;
+constexpr float distance = 0.15;
 
 static std::vector<Terrain::Vertex> triangulateAndFlatten(const std::vector<std::vector<Terrain::Vertex>> & vertices) {
 
@@ -32,7 +32,7 @@ static std::vector<Terrain::Vertex> triangulateAndFlatten(const std::vector<std:
 
 }
 
-static std::vector<std::vector<Terrain::Vertex>> generateVertices(uint32_t width, uint32_t length) {
+static std::vector<std::vector<Terrain::Vertex>> generateVertices(const uint64_t width, const uint64_t length) {
 
     std::vector<std::vector<Terrain::Vertex>> vertices;
     vertices.reserve(width);
@@ -40,20 +40,19 @@ static std::vector<std::vector<Terrain::Vertex>> generateVertices(uint32_t width
     const float w_offset = (width*0.5f) * distance;
     const float l_offset = (length*0.5f) * distance;
 
-    for (uint32_t v = 0; v < width; ++v) {
+    for (uint64_t v = 0; v < width; ++v) {
         vertices.emplace_back();
         auto & vec = vertices.back();
         vec.reserve(length);
 
         const float x = v*distance - w_offset;
 
-        for (uint32_t i = 0; i < length; ++i) {
+        for (uint64_t i = 0; i < length; ++i) {
             vec.emplace_back();
             auto & vert = vec.back();
 
-
             const float z = i*distance - l_offset;
-            const float y = 10 * glm::perlin(glm::vec2 {v/(float)width, i/(float)length});
+            const float y = 8 * glm::perlin(6.f * glm::vec2 {v/(float)width, i/(float)length});
 
             vert.position = { x, y, z };
         }
@@ -83,7 +82,10 @@ static std::vector<std::vector<Terrain::Vertex>> generateVertices(uint32_t width
 
 Terrain Terrain::generate(uint32_t width, uint32_t length) {
 
-    auto matrix = generateVertices(width, length);
+    const uint64_t actual_w = width / distance;
+    const uint64_t actual_l = length / distance;
+
+    auto matrix = generateVertices(actual_w, actual_l);
     auto flat = triangulateAndFlatten(matrix);
 
     return Terrain(std::move(flat));
@@ -116,12 +118,10 @@ void Terrain::initVao() {
 }
 
 void Terrain::draw() {
-    glDepthMask(GL_FALSE);
     shader.use();
     glStencilFunc(GL_ALWAYS, -1, 0xFF);
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-    glDepthMask(GL_TRUE);
 }
 
 Terrain::Terrain(Terrain && terrain) noexcept :
