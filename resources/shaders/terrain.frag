@@ -46,16 +46,16 @@ void main() {
     vec3 worldPos = vec3(ex_worldPosition);
     vec3 normalVector = normalize(ex_worldNormal);
 
-    vec3 green = vec3(0.22, 0.59, 0.32);
-    vec3 brown = vec3(0.59, 0.37, 0.22);
+    vec3 green = vec3(0.03, 0.30, 0.01);
+    vec3 brown = vec3(0.49, 0.30, 0.12);
     vec3 color;
-    if (ex_worldPosition.y < 3) {
-        color = green;
-    } else if (ex_worldPosition.y > 7) {
-        color = brown;
-    } else {
-        color = brown;
-    }
+
+    float gCap = -3.0;
+    float spread = 4;
+
+    float b_ratio = min(1, max(0, (ex_worldPosition.y - gCap) / spread));
+    float g_ratio = 1.0 - b_ratio;
+    color = (b_ratio * brown) + (g_ratio * green);
 
     for (int index = 0; index < lightCount; ++index) {
 

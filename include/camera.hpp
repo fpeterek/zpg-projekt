@@ -17,7 +17,7 @@
 
 
 class Camera : public Observer, public Observable {
-    glm::mat4 projectMat = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+    glm::mat4 projectMat = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 200.0f);
 
     glm::vec3 eye { 0.f, 1.f, 3.f };
     glm::vec3 target { 0.f };
