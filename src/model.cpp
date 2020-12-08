@@ -230,6 +230,8 @@ std::shared_ptr<Model> ModelLoader::loadModel(const std::string & key) {
     processMaterials(scene, model->materials);
     processNode(*scene.mRootNode, scene, model);
 
+    models.emplace(key, model);
+
     return model;
 }
 

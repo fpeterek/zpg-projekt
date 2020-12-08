@@ -113,6 +113,16 @@ void Scene::setShaderCount() const {
     ShaderManager::terrain().passUniformLocation("lightCount", lights.size());
 }
 
+void Scene::removeObject(const size_t id) {
+    auto iter = std::find_if(
+        objects.begin(), objects.end(),
+        [id](const Object & obj) -> bool { return obj.objectId() == id; }
+    );
+    if (iter != objects.end()) {
+        objects.erase(iter);
+    }
+}
+
 void Scene::Builder::reset() {
     objects = { };
     emplaceAmbientLight({ 0.1f, 0.1f, 0.1f });

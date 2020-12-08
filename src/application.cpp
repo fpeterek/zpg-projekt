@@ -298,13 +298,8 @@ Application::Application() {
         .emplaceAmbientLight(glm::vec3 { .1f })
         .addObject(
             objBuilder
-            .emplaceObject(ModelLoader::get("tree/lowpoyltree"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
-            .setPosition(0.f, 0.f, 5.f).build()
-        )
-        .addObject(
-            objBuilder
             .emplaceObject(ModelLoader::get("a380_alt/11803_Airplane_v1_l1"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
-            .setPosition(0.f, 0.f, -5.f).setScale(0.005f, 0.005f, 0.005f)
+            .setPosition(0.f, 5.f, -5.f).setScale(0.005f, 0.005f, 0.005f)
             .setRotation(-M_PI/2, glm::vec3 { 1.f, 0.f, 0.f })
             .build()
 
@@ -370,8 +365,9 @@ void Application::selectObject(int mouseX, int mouseY) {
 
     deselect();
     if (objectId) {
-        selected = scene().indexOf(objectId);
-        getSelected().setColor(Object::secondaryColor);
+        scene().removeObject(objectId);
+        // selected = scene().indexOf(objectId);
+        // getSelected().setColor(Object::secondaryColor);
     }
 
 }
@@ -389,12 +385,13 @@ void Application::emplaceObject(const int mouseX, const int mouseY) {
     glm::vec4 viewport { 0, 0, bufferWidth, bufferHeight };
     auto pos = glm::unProject(screenX, scene().camera.view(), scene().camera.projection(), viewport);
 
-    /*scene().objects.emplace_back(
+    scene().objects.emplace_back(
         Object::Builder()
-            .emplaceObject(models::sphere(), ShaderManager::blinn(), TextureManager::get("grass"))
-            .setPosition(pos)
+            .emplaceObject(ModelLoader::get("alt_tree/lowpolytree"), ShaderManager::blinn(),
+                           TextureManager::get("grass"))
+            .setPosition(pos.x, pos.y + 1.6, pos.z)
             .build()
-    );*/
+    );
 }
 
 void Application::notify(EventType eventType, void * object) {
@@ -402,16 +399,3 @@ void Application::notify(EventType eventType, void * object) {
         onButtonPress(((Mouse*)object)->data());
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

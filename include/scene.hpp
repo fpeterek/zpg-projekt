@@ -50,6 +50,8 @@ public:
     void removeLight(std::size_t lightIndex);
     void emplaceLight(glm::vec3 color, glm::vec3 position, gl::Light type);
 
+    void removeObject(size_t id);
+
     size_t indexOf(unsigned int objectId);
 
     class Builder {
