@@ -88,10 +88,11 @@ Terrain Terrain::generate(uint32_t width, uint32_t length) {
     auto matrix = generateVertices(actual_w, actual_l);
     auto flat = triangulateAndFlatten(matrix);
 
-    return Terrain(std::move(flat));
+    return Terrain(std::move(flat), width, length);
 }
 
-Terrain::Terrain(std::vector<Terrain::Vertex> vertices) : vertices(std::move(vertices)) {
+Terrain::Terrain(std::vector<Terrain::Vertex> vertices, uint32_t width, uint32_t length) :
+        vertices(std::move(vertices)), width(width), length(length) {
     initVbo();
     initVao();
 }
@@ -125,4 +126,18 @@ void Terrain::draw() {
 }
 
 Terrain::Terrain(Terrain && terrain) noexcept :
-    vbo(terrain.vbo), vao(terrain.vao), vertices(std::move(terrain.vertices)) { }
+        vbo(terrain.vbo), vao(terrain.vao), vertices(std::move(terrain.vertices)), length(terrain.length), width(terrain.length) { }
+
+float Terrain::yAt(float x, float z) const {
+    const float w_offset = (width*0.5f) * distance;
+    const float l_offset = (length*0.5f) * distance;
+
+    z = (z+l_offset) / distance;
+    x = (x+w_offset) / distance;
+
+    return 8 * glm::perlin(6.f * glm::vec2 {x/(float)(width/distance), z/(float)(length/distance)});
+}
+
+glm::vec3 Terrain::pointAt(float x, float z) const {
+    return { x, yAt(x, z), z };
+}

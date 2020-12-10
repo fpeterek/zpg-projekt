@@ -19,11 +19,11 @@ void Camera::apply() {
 }
 
 void Camera::moveSideways(Direction dir) {
-    sidewaysMovement = (int)dir;
+    movement.y = (int)dir;
 }
 
 void Camera::moveForward(Direction dir) {
-    forwardMovement = (int)dir;
+    movement.x = (int)dir;
 }
 
 void Camera::rotateHor(Direction dir) {
@@ -48,27 +48,9 @@ void Camera::updateAngle(const float dt) {
 
 }
 
-void Camera::updateForwardMovement(const float dt) {
-
-    const float sideways = sidewaysMovement * dt * moveSpeed;
-    const float forward = forwardMovement * dt * moveSpeed;
-
-    const float dx = std::cos(fi) * forward + std::cos(fi + M_PI_2) * sideways;
-    const float dy = std::sin(psi) * forward;
-    const float dz = std::sin(fi) * forward + std::sin(fi + M_PI_2) * sideways;
-
-    eye.x += dx;
-    eye.y += dy;
-    eye.z += dz;
-
-    changeMade = changeMade or dx or dy or dz;
-
-}
-
 void Camera::update(const float dt) {
 
     updateAngle(dt);
-    updateForwardMovement(dt);
     calcTarget();
     updateCameraMatrix();
 
@@ -137,5 +119,20 @@ void Camera::notify(EventType eventType, void * object) {
 
 glm::vec3 Camera::position() const {
     return eye;
+}
+
+glm::vec2 Camera::movementVector(float dt) const {
+    const float sideways = movement.y * dt * moveSpeed;
+    const float forward = movement.x * dt * moveSpeed;
+
+    const float dx = std::cos(fi) * forward + std::cos(fi + M_PI_2) * sideways;
+    const float dz = std::sin(fi) * forward + std::sin(fi + M_PI_2) * sideways;
+
+    return { dx, dz };
+}
+
+void Camera::move(glm::vec3 delta) {
+    eye += delta;
+    apply();
 }
 

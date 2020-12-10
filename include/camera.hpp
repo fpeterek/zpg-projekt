@@ -26,8 +26,7 @@ class Camera : public Observer, public Observable {
     float fi = 1.5f * M_PI;
     float psi = 0.f;
 
-    int sidewaysMovement = 0;
-    int forwardMovement = 0;
+    glm::vec2 movement { 0.0, 0.0 };
     int hRotate = 0;
     int vRotate = 0;
 
@@ -45,17 +44,19 @@ class Camera : public Observer, public Observable {
     void capAngles();
 
     void updateAngle(float dt);
-    void updateForwardMovement(float dt);
 
 public:
     Camera();
 
     void setPosition(glm::vec3 pos);
+    void move(glm::vec3 delta);
 
     void moveSideways(Direction dir);
     void moveForward(Direction dir);
     void rotateHor(Direction dir);
     void rotateVer(Direction dir);
+
+    glm::vec2 movementVector(float dt) const;
 
     void update(float dt);
 

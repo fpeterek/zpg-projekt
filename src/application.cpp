@@ -112,7 +112,7 @@ void Application::windowIconifyCallback(GLFWwindow * win, int iconified) {
 
 void Application::windowSizeCallback(GLFWwindow * win, int width, int height) {
     (void)win;
-    // std::cout << "resize " << width << ", " << height << std::endl;
+    // std::cout << "resize " << width << ", " << length << std::endl;
     glViewport(0, 0, width, height);
 }
 
@@ -242,10 +242,21 @@ void Application::run() {
     loop();
 }
 
+void Application::updatePlayer(const float dt) {
+    auto d2 = scene().camera.movementVector(dt);
+    auto pos = scene().camera.position();
+    pos.x += d2.x;
+    pos.z += d2.y;
+    pos.y = scene().terrain.yAt(pos.x, pos.z) + 1.f;
+    scene().camera.setPosition(pos);
+    std::cout << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+}
+
 void Application::update(const float dt) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    updatePlayer(dt);
     scene().update(dt);
 
     glfwPollEvents();

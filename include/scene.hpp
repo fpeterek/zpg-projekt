@@ -22,7 +22,6 @@ class Scene {
 
     std::vector<std::shared_ptr<ColoredLight>> lights;
     std::shared_ptr<Skybox> skybox;
-    Terrain terrain;
 
     void applyLights() const;
     void setShaderCount() const;
@@ -36,6 +35,7 @@ public:
     const AmbientLight ambientLight;
 
     Camera camera;
+    Terrain terrain;
 
     void init();
 

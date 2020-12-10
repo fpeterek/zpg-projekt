@@ -21,6 +21,8 @@ public:
     };
 
 private:
+    const uint32_t width;
+    const uint32_t length;
     GLuint vbo = 0;
     GLuint vao = 0;
     std::vector<Terrain::Vertex> vertices;
@@ -30,13 +32,15 @@ private:
 
     Shader & shader = ShaderManager::terrain();
 
-    explicit Terrain(std::vector<Terrain::Vertex> vertices);
+    Terrain(std::vector<Terrain::Vertex> vertices, uint32_t width, uint32_t length);
 
 public:
 
     Terrain(Terrain && terrain) noexcept;
 
     void draw();
+    float yAt(float x, float z) const;
+    glm::vec3 pointAt(float x, float z) const;
 
     static Terrain generate(uint32_t width, uint32_t length);
 };
