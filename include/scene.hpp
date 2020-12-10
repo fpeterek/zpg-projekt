@@ -49,6 +49,7 @@ public:
     std::shared_ptr<ColoredLight> lightPtr(size_t index) const;
     void removeLight(std::size_t lightIndex);
     void emplaceLight(glm::vec3 color, glm::vec3 position, gl::Light type);
+    void emplaceLight(glm::vec3 color, glm::vec3 pos, glm::vec3 dir, float cutoff);
 
     void removeObject(size_t id);
 
@@ -69,6 +70,7 @@ public:
         Builder();
 
         Builder & emplaceLight(glm::vec3 color, glm::vec3 data, gl::Light type);
+        Builder & emplaceLight(glm::vec3 color, glm::vec3 pos, glm::vec3 dir, float cutoff);
         Builder & emplaceAmbientLight(glm::vec3 color);
         Builder & setCameraPosition(glm::vec3 position);
         Builder & setCameraPosition(float x, float y, float z);

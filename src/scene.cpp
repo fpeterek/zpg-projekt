@@ -87,10 +87,8 @@ static std::shared_ptr<ColoredLight> createLight(glm::vec3 color, glm::vec3 data
     throw std::runtime_error("Unsupported light type");
 }
 
-static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos, const gl::Light type,
-                         std::vector<std::shared_ptr<ColoredLight>> & vec) {
+static void initAndEmplace(std::shared_ptr<ColoredLight> & light, std::vector<std::shared_ptr<ColoredLight>> & vec) {
 
-    auto light = createLight(color, pos, type);
     light->registerObserver(ShaderManager::constant());
     light->registerObserver(ShaderManager::lambert());
     light->registerObserver(ShaderManager::phong());
@@ -99,6 +97,25 @@ static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos, const g
     light->lightIndex = vec.size();
     vec.emplace_back(light);
 
+}
+
+static void emplaceLight(glm::vec3 color, glm::vec3 pos, glm::vec3 dir, float cutoff,
+                         std::vector<std::shared_ptr<ColoredLight>> & vec) {
+
+    std::shared_ptr<ColoredLight> light = std::make_shared<Spotlight>(color, pos, dir, cutoff);
+    initAndEmplace(light, vec);
+}
+
+static void emplaceLight(const glm::vec3 & color, const glm::vec3 & pos, const gl::Light type,
+                         std::vector<std::shared_ptr<ColoredLight>> & vec) {
+
+    std::shared_ptr<ColoredLight> light = createLight(color, pos, type);
+    initAndEmplace(light, vec);
+}
+
+void Scene::emplaceLight(glm::vec3 color, glm::vec3 pos, glm::vec3 dir, float cutoff) {
+    ::emplaceLight(color, pos, dir, cutoff, lights);
+    applyLights();
 }
 
 void Scene::emplaceLight(glm::vec3 color, glm::vec3 position, gl::Light type) {
@@ -146,6 +163,11 @@ Scene::Builder & Scene::Builder::addObject(const Object & object) {
 
 Scene::Builder & Scene::Builder::emplaceLight(glm::vec3 color, glm::vec3 position, gl::Light type) {
     ::emplaceLight(color, position, type, lights);
+    return *this;
+}
+
+Scene::Builder & Scene::Builder::emplaceLight(glm::vec3 color, glm::vec3 pos, glm::vec3 dir, float cutoff) {
+    ::emplaceLight(color, pos, dir, cutoff, lights);
     return *this;
 }
 

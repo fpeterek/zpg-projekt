@@ -12,11 +12,6 @@
 
 #include "observer.hpp"
 
-enum class LightType {
-    Default,
-    Directional,
-    Ambient
-};
 
 namespace gl {
     enum class Light {
@@ -27,11 +22,6 @@ namespace gl {
     };
 }
 
-struct LightObserver {
-    virtual void colorChanged(glm::vec3 color, size_t lightIndex, LightType lightType) = 0;
-    virtual void positionChanged(glm::vec3 position, size_t lightIndex, LightType lightType) = 0;
-    virtual void typeChanged(gl::Light type, size_t lightIndex) = 0;
-};
 
 class ColoredLight : public Observable {
 
@@ -68,10 +58,7 @@ public:
     void move(glm::vec3 delta) const;
     void setPosition(glm::vec3 newPos) const;
 
-    void setColor(glm::vec3 color) const override;
     glm::vec3 getPosition() const;
-
-    void apply() const override;
 };
 
 typedef ColoredLight AmbientLight;
@@ -87,13 +74,28 @@ public:
     DirectionalLight();
     DirectionalLight(glm::vec3 color, glm::vec3 direction);
 
-    void move(glm::vec3 delta) const;
     void setDirection(glm::vec3 newDirection) const;
 
-    void setColor(glm::vec3 color) const override;
     glm::vec3 getDirection() const;
+};
 
-    void apply() const override;
+
+class Spotlight : public PositionedLight {
+    mutable glm::vec3 direction { 0.f };
+    mutable float cutoff = 12.5;
+
+public:
+
+    gl::Light type() const override;
+
+    Spotlight();
+    Spotlight(glm::vec3 color, glm::vec3 position, glm::vec3 direction, float cutoff);
+
+    void setDirection(glm::vec3 newDirection) const;
+    void setCutoff(float cutoff) const;
+
+    glm::vec3 getDirection() const;
+    float getCutoff() const;
 };
 
 #endif //ZPG_PROJEKT_LIGHT_HPP

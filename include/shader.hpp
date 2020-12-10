@@ -52,6 +52,11 @@ public:
     void positionChanged(glm::vec3 position, size_t lightIndex, gl::Light lightType);
     void typeChanged(gl::Light type, size_t lightIndex);
 
+    void applyLight(ColoredLight & light);
+    void applyLight(PositionedLight & light);
+    void applyLight(DirectionalLight & light);
+    void applyLight(Spotlight & light);
+
     void notify(EventType eventType, void * object) override;
 };
 

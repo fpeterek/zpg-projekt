@@ -147,7 +147,13 @@ void Shader::colorChanged(glm::vec3 color, size_t lightIndex, gl::Light lightTyp
 void Shader::positionChanged(glm::vec3 position, size_t lightIndex, gl::Light lightType) {
     if (lightType == gl::Light::Ambient) {
         /* noop -> ambient light has no coordinates */
-    } else if (lightType == gl::Light::Point or lightType == gl::Light::Directional) {
+    } else if (lightType == gl::Light::Point) {
+        passUniformLocation("lights[" + std::to_string(lightIndex) + "].position", position);
+    } else if (lightType == gl::Light::Directional) {
+        passUniformLocation("lights[" + std::to_string(lightIndex) + "].direction", position);
+    } else if (lightType == gl::Light::Spotlight) {
+
+        passUniformLocation("lights[" + std::to_string(lightIndex) + "].direction", position);
         passUniformLocation("lights[" + std::to_string(lightIndex) + "].position", position);
     }
 }
@@ -172,22 +178,44 @@ void Shader::notify(EventType eventType, void * object) {
 
         ColoredLight & light = *(ColoredLight*)object;
 
-        colorChanged(light.getColor(), light.lightIndex, light.type());
-        typeChanged(light.type(), light.lightIndex);
+        applyLight(light);
 
         if (light.type() == gl::Light::Point) {
             PositionedLight & l = *(PositionedLight*)object;
-            positionChanged(l.getPosition(), l.lightIndex, l.type());
+            applyLight(l);
         } else if (light.type() == gl::Light::Directional) {
             DirectionalLight & l = *(DirectionalLight*)object;
-            positionChanged(l.getDirection(), l.lightIndex, l.type());
+            applyLight(l);
+        } else if (light.type() == gl::Light::Spotlight) {
+            Spotlight & l = *(Spotlight*)object;
+            applyLight(l);
         }
+
     } else if (eventType == EventType::CameraMoved) {
         Camera & camera = *((Camera*)object);
         updateView(camera.view());
         updatePosition(camera.position());
         updateProjection(camera.projection());
     }
+}
+
+void Shader::applyLight(ColoredLight & light) {
+    colorChanged(light.getColor(), light.lightIndex, light.type());
+    typeChanged(light.type(), light.lightIndex);
+}
+
+void Shader::applyLight(PositionedLight & light) {
+    passUniformLocation("lights[" + std::to_string(light.lightIndex) + "].position", light.getPosition());
+}
+
+void Shader::applyLight(DirectionalLight & light) {
+    passUniformLocation("lights[" + std::to_string(light.lightIndex) + "].direction", light.getDirection());
+}
+
+void Shader::applyLight(Spotlight & light) {
+    passUniformLocation("lights[" + std::to_string(light.lightIndex) + "].position", light.getPosition());
+    passUniformLocation("lights[" + std::to_string(light.lightIndex) + "].direction", light.getDirection());
+    passUniformLocation("lights[" + std::to_string(light.lightIndex) + "].cutoff", glm::cos(glm::radians(light.getCutoff())));
 }
 
 ShaderManager & ShaderManager::instance() {

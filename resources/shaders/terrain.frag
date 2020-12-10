@@ -9,6 +9,8 @@ out vec4 out_color;
 
 struct Light {
     vec3 position;
+    vec3 direction;
+    float cutoff;
     vec3 lightColor;
     int lightType;
 };
@@ -39,6 +41,26 @@ vec3 directional_light(vec3 color, vec3 normalVector, vec3 lightDirection, vec3 
     return dot_product * color;
 }
 
+vec3 spotlight(vec3 color, vec3 worldPos, vec3 normalVector, vec3 lightPosition, vec3 lightDirection, vec3 lightColor, float cutoff) {
+
+    vec3 lightDir = normalize(lightPosition - worldPos);
+
+    float theta = dot(lightDir, normalize(-lightDirection));
+    if (theta <= cutoff) {
+        return vec3(0.0, 0.0, 0.0);
+    }
+
+    float dist = length(lightPosition - worldPos);
+    float attenuation = clamp(5.0 / dist, 0.0, 1.0);
+
+    vec3 lightVector = normalize(lightPosition - vec3(ex_worldPosition));
+
+    float dot_product = max(dot(lightVector, normalVector), 0.0);
+
+    return dot_product * color * attenuation;
+
+}
+
 void main() {
 
     vec3 diffuse = vec3(0.0, 0.0, 0.0);
@@ -61,13 +83,17 @@ void main() {
 
         vec3 lightPosition = lights[index].position;
         vec3 lightColor = lights[index].lightColor;
+        vec3 lightDirection = lights[index].direction;
+        float cutoff = lights[index].cutoff;
 
         vec3 d;
 
         if (lights[index].lightType == 1) {
             d = point_light(color, worldPos, normalVector, lightPosition, lightColor);
         } else if (lights[index].lightType == 2) {
-            d = directional_light(color, normalVector, lightPosition, lightColor);
+            d = directional_light(color, normalVector, lightDirection, lightColor);
+        } else if (lights[index].lightType == 3) {
+            d = spotlight(color, worldPos, normalVector, lightPosition, lightDirection, lightColor, cutoff);
         }
 
         diffuse = diffuse + d;
