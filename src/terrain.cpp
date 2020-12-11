@@ -129,8 +129,8 @@ Terrain::Terrain(Terrain && terrain) noexcept :
         vbo(terrain.vbo), vao(terrain.vao), vertices(std::move(terrain.vertices)), length(terrain.length), width(terrain.length) { }
 
 float Terrain::yAt(float x, float z) const {
-    const float w_offset = (width*0.5f) * distance;
-    const float l_offset = (length*0.5f) * distance;
+    const float w_offset = (width*0.5f);
+    const float l_offset = (length*0.5f);
 
     z = (z+l_offset) / distance;
     x = (x+w_offset) / distance;

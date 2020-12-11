@@ -34,7 +34,7 @@ class Camera : public Observer, public Observable {
 
     glm::mat4 camera;
 
-    static constexpr float moveSpeed = 3.f;
+    static constexpr float moveSpeed = 7.f;
     static constexpr float rotationSpeed = 1.f;
     static constexpr float dragSpeed = 0.3f;
 

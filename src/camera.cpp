@@ -121,9 +121,17 @@ glm::vec3 Camera::position() const {
     return eye;
 }
 
+static glm::vec2 adjustMovementSpeed(const glm::vec2 vector, const float max) {
+    const float fx = (vector.y != 0) ? vector.x/2 : vector.x;
+    const float fy = (vector.x != 0) ? vector.y/2 : vector.y;
+
+    return { fx, fy };
+}
+
 glm::vec2 Camera::movementVector(float dt) const {
-    const float sideways = movement.y * dt * moveSpeed;
-    const float forward = movement.x * dt * moveSpeed;
+    const glm::vec2 adjusted = adjustMovementSpeed(movement, moveSpeed);
+    const float sideways = adjusted.y * dt * moveSpeed;
+    const float forward = adjusted.x * dt * moveSpeed;
 
     const float dx = std::cos(fi) * forward + std::cos(fi + M_PI_2) * sideways;
     const float dz = std::sin(fi) * forward + std::sin(fi + M_PI_2) * sideways;

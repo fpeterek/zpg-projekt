@@ -247,9 +247,8 @@ void Application::updatePlayer(const float dt) {
     auto pos = scene().camera.position();
     pos.x += d2.x;
     pos.z += d2.y;
-    pos.y = scene().terrain.yAt(pos.x, pos.z) + 1.f;
+    pos.y = scene().terrain.yAt(pos.x, pos.z) + 2.f;
     scene().camera.setPosition(pos);
-    std::cout << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
 }
 
 void Application::update(const float dt) {
