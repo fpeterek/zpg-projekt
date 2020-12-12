@@ -22,6 +22,6 @@ add_executable(
         src/observer.cpp
         src/skybox.cpp
         src/terrain.cpp
-)
+        include/movement.hpp src/movement.cpp)
 
 file(COPY resources DESTINATION .)

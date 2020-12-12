@@ -15,11 +15,14 @@
 #include "enums.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
+#include "movement.hpp"
 
 
 class Object {
 
-    glm::mat4 transform { 1.f };
+    glm::vec3 translation { 0.f };
+    glm::vec3 rotation { 0.f };
+    glm::vec3 scales { 1.f };
 
     Growth growthDir = Growth::none;
     Rotation rotationDir = Rotation::none;
@@ -30,6 +33,7 @@ class Object {
     std::reference_wrapper<Shader> shader;
     std::shared_ptr<Texture> texture;
     std::shared_ptr<Model> model;
+    std::optional<std::shared_ptr<MovementCalculator>> movementCalculator;
 
     unsigned int id;
 
@@ -62,14 +66,16 @@ class Object {
 public:
 
     Object(std::shared_ptr<Model> model, Shader & shader, std::shared_ptr<Texture> texture);
+    Object(std::shared_ptr<Model> model, Shader & shader, std::shared_ptr<Texture> texture,
+           std::shared_ptr<MovementCalculator> movementCalculator);
 
     void draw() const;
 
-    const glm::mat4 & transformation() const;
+    glm::mat4 transformation() const;
     unsigned int objectId() const;
 
-    void rotate(float degree, glm::vec3 axis);
-    void translate(glm::vec3 delta);
+    void rotate(glm::vec3 radians);
+    void move(glm::vec3 delta);
     void scale(glm::vec3 scales);
 
     void applyForce(Direction dx, Direction dy);
@@ -83,6 +89,7 @@ public:
     void setColor(glm::vec3 color);
     void setColor(float r, float g, float b);
 
+    void updateMovement(double dt);
     void update(double dt);
 
     static const glm::vec3 defaultColor;
@@ -93,27 +100,29 @@ public:
         std::shared_ptr<Model> model;
         Shader * shader = nullptr;
         std::shared_ptr<Texture> texture;
+        std::optional<std::shared_ptr<MovementCalculator>> movementCalculator;
 
-        float degree = 0.f;
-        glm::vec3 rotationAxis { 0.f };
+        glm::vec3 rotationRadians { 0.f };
         glm::vec3 position { 0.f };
         glm::vec3 scales { 1.f };
         glm::vec3 color = defaultColor;
 
         void reset();
+        Object createObject();
 
     public:
         Builder & setModel(std::shared_ptr<Model> model);
         Builder & setShader(Shader & shader);
         Builder & setTexture(std::shared_ptr<Texture> texture);
         Builder & emplaceObject(std::shared_ptr<Model> model, Shader & shader, std::shared_ptr<Texture> texture);
-        Builder & setRotation(float degree, glm::vec3 axis);
+        Builder & setRotation(glm::vec3 radians);
         Builder & setPosition(glm::vec3 position);
         Builder & setPosition(float x, float y, float z);
         Builder & setScale(glm::vec3 scales);
         Builder & setScale(float x, float y, float z);
         Builder & setColor(glm::vec3 color);
         Builder & setColor(float r, float g, float b);
+        Builder & setMovement(std::shared_ptr<MovementCalculator> mc);
 
         Object build();
 

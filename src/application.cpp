@@ -309,9 +309,16 @@ Application::Application() {
         .emplaceAmbientLight(glm::vec3 { .1f })
         .addObject(
             objBuilder
-            .emplaceObject(ModelLoader::get("a380_alt/11803_Airplane_v1_l1"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
-            .setPosition(0.f, 5.f, -5.f).setScale(0.005f, 0.005f, 0.005f)
-            .setRotation(-M_PI/2, glm::vec3 { 1.f, 0.f, 0.f })
+            .emplaceObject(ModelLoader::get("a380_alt/untitled"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+            .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
+            .setMovement(
+                std::make_shared<MovementCalculator>(
+                        //std::make_shared<Circle>(glm::vec3 { 0.f }, 10.f),
+                        std::make_shared<Line>(glm::vec3 { 0.f, 5.f, 0.f }, glm::vec3 { 10.f, 7.f, 3.f }),
+                        glm::vec3 { 0.f },
+                        15.0
+                    )
+            )
             .build()
 
         )
