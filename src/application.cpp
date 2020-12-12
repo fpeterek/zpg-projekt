@@ -320,6 +320,18 @@ Application::Application() {
                     )
             )
             .build()
+        ).addObject(
+            objBuilder
+            .emplaceObject(ModelLoader::get("a380_alt/untitled"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+            .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
+            .setMovement(
+                std::make_shared<MovementCalculator>(
+                    std::make_shared<Circle>(glm::vec3 { 0.f }, 25.f),
+                    glm::vec3 { 0.f },
+                    7.0
+                )
+            )
+            .build()
 
         )
         .setCameraPosition(0.f, 1.f, 3.f)
