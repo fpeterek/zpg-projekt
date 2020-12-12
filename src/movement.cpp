@@ -6,7 +6,12 @@
 
 /* -------------------- Line -------------------- */
 
-Line::Line(glm::vec3 begin, glm::vec3 end) : begin(begin), end(end), dir(glm::normalize(end - begin)) { }
+static glm::vec3 calcDir(const glm::vec3 begin, const glm::vec3 end) {
+    glm::vec3 dir = end - begin;
+    return glm::normalize(glm::vec3 { 0.0, -dir.y, 0.0 });
+}
+
+Line::Line(glm::vec3 begin, glm::vec3 end) : begin(begin), end(end), dir(calcDir(begin, end)) { }
 
 static glm::vec3 operator*(const glm::vec3 vec, const float f) {
     return { vec.x * f, vec.y * f, vec.z * f };
@@ -32,9 +37,9 @@ Circle::Circle(const glm::vec3 center, const float radius) : center(center), rad
 
 glm::vec3 Circle::position(const float t) const {
     const float angle = calcAngle(t);
-    const float x = center.x + std::cos(glm::radians(angle)) * radius;
+    const float x = center.x + std::cos(angle) * radius;
     const float y = center.y;
-    const float z = center.z + std::sin(glm::radians(angle)) * radius;
+    const float z = center.z + std::sin(angle) * radius;
     return { x, y, z };
 }
 
@@ -51,7 +56,7 @@ MovementCalculator::MovementCalculator(std::shared_ptr<MovementCurve> curve, glm
     curve(std::move(curve)), offset(rotationOffset), duration(duration) { }
 
 float MovementCalculator::currentT() const {
-    return 1.f / t;
+    return t / duration;
 }
 
 void MovementCalculator::update(float dt) {

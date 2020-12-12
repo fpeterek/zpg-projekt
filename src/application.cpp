@@ -314,9 +314,9 @@ Application::Application() {
             .setMovement(
                 std::make_shared<MovementCalculator>(
                         //std::make_shared<Circle>(glm::vec3 { 0.f }, 10.f),
-                        std::make_shared<Line>(glm::vec3 { 0.f, 5.f, 0.f }, glm::vec3 { 10.f, 7.f, 3.f }),
+                        std::make_shared<Line>(glm::vec3 { -100.f, 10.f, -15.f }, glm::vec3 { 100.f, 25.f, 25.f }),
                         glm::vec3 { 0.f },
-                        15.0
+                        7.0
                     )
             )
             .build()
