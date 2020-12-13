@@ -63,12 +63,12 @@ void Camera::update(const float dt) {
 void Camera::capAngles() {
 
     if (fi < 0) {
-        fi += 360.f;
+        fi += 2*M_PI;
     }
-    fi = std::fmod(fi, 360.f);
+    fi = std::fmod(fi, 2*M_PI);
 
-    psi = std::max(psi, -85.f);
-    psi = std::min(psi, 85.f);
+    psi = std::max(psi, (float)-(M_PI_2*0.95));
+    psi = std::min(psi, (float)(M_PI_2*0.95));
 }
 
 void Camera::calcTarget() {
