@@ -45,9 +45,7 @@ glm::vec3 Circle::position(const float t) const {
 
 glm::vec3 Circle::direction(const float t) const {
     const float angle = calcAngle(t);
-    const float x = -1 * std::sin(angle);
-    const float z = std::cos(angle);
-    return { x, 0.f, z };
+    return { 0.f, -angle-M_PI_2, 0.f };
 }
 
 /* -------------------- Calculator -------------------- */

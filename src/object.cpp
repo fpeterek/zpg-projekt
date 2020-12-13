@@ -36,11 +36,12 @@ void Object::draw() const {
 }
 
 glm::mat4 Object::transformation() const {
-    glm::mat4 t = glm::rotate(glm::mat4 { 1.f }, rotation.x, { 1.f, 0.f, 0.f });
+    glm::mat4 t = glm::translate(glm::mat4 { 1.f }, translation);
+    t = glm::scale(t, scales);
+    t = glm::rotate(t, rotation.x, { 1.f, 0.f, 0.f });
     t = glm::rotate(t, rotation.y, { 0.f, 1.f, 0.f });
     t = glm::rotate(t, rotation.z, { 0.f, 0.f, 1.f });
-    t = glm::translate(t, translation);
-    return glm::scale(t, scales);
+    return t;
 }
 
 float Object::getAcc(Direction dir) {

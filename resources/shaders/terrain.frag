@@ -75,7 +75,8 @@ void main() {
     float gCap = -3.0;
     float spread = 4;
 
-    float b_ratio = min(1, max(0, (ex_worldPosition.y - gCap) / spread));
+    float b_ratio = (ex_worldPosition.y - gCap) / spread;
+    b_ratio = min(1, max(0, b_ratio));
     float g_ratio = 1.0 - b_ratio;
     color = (b_ratio * brown) + (g_ratio * green);
 

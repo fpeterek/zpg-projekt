@@ -300,7 +300,7 @@ Application::Application() {
     scenePtr = sceneBuilder
         .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 1.f, 0.f }, gl::Light::Point)
         .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f }, gl::Light::Point)
-        .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { -3.f, -8.f, 0.f }, gl::Light::Directional)
+        .emplaceLight(glm::vec3 { 8.f }, glm::vec3 { -3.f, -8.f, 0.f }, gl::Light::Directional)
         .emplaceLight(glm::vec3 { 1.f, 0.f, 0.f }, glm::vec3 { -10.f, 1.f, -5.f }, glm::vec3 { 0.f, -2.f, 0.f }, 12.5f)
         // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 6.f, 6.0f })
         // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, -6.f, -6.0f })
@@ -326,8 +326,8 @@ Application::Application() {
             .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
             .setMovement(
                 std::make_shared<MovementCalculator>(
-                    std::make_shared<Circle>(glm::vec3 { 0.f }, 25.f),
-                    glm::vec3 { 0.f },
+                    std::make_shared<Circle>(glm::vec3 { 0.f, 20.f, 0.f }, 50.f),
+                    glm::vec3 { 0.0, 0.0, 0.0 },
                     7.0
                 )
             )
