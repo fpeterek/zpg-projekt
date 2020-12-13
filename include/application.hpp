@@ -75,6 +75,8 @@ class Application : public Observer {
     void initGL();
     void initApplication();
 
+    void initScene();
+
     void updatePlayer(float dt);
     void update(float dt);
     void loop();

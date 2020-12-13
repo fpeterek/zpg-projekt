@@ -6,6 +6,7 @@
 #define ZPG_PROJEKT_MOVEMENT_HPP
 
 #include <memory>
+#include <functional>
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -38,6 +39,18 @@ class Circle : public MovementCurve {
 
 public:
     Circle(glm::vec3 center, float radius);
+
+    glm::vec3 position(float t) const override;
+    glm::vec3 direction(float t) const override;
+};
+
+class BezierCurve : public MovementCurve {
+
+    const std::function<glm::vec3(float)> bezierCallback;
+
+public:
+
+    BezierCurve(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4);
 
     glm::vec3 position(float t) const override;
     glm::vec3 direction(float t) const override;

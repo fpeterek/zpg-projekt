@@ -57,6 +57,30 @@ glm::vec3 Circle::direction(const float t) const {
     return { 0.f, -angle-M_PI_2, 0.f };
 }
 
+/* -------------------- Bezier Curve -------------------- */
+
+static auto createCallback(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4) {
+
+    return [=](const float t) -> glm::vec3 {
+        const glm::vec3 point1 = p1 * std::pow(1-t, 3.f);
+        const glm::vec3 point2 = p2 * 3*t * std::pow(1-t, 2.f);
+        const glm::vec3 point3 = p3 * 3*t*t * (1-t);
+        const glm::vec3 point4 = p4 * t*t*t;
+        return point1 + point2 + point3 + point4;
+    };
+}
+
+BezierCurve::BezierCurve(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4) :
+    bezierCallback(createCallback(p1, p2, p3, p4)) { }
+
+glm::vec3 BezierCurve::position(float t) const {
+    return bezierCallback(t);
+}
+
+glm::vec3 BezierCurve::direction(float t) const {
+    return glm::vec3();
+}
+
 /* -------------------- Calculator -------------------- */
 
 MovementCalculator::MovementCalculator(std::shared_ptr<MovementCurve> curve, glm::vec3 rotationOffset, float duration) :

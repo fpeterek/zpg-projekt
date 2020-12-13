@@ -289,10 +289,7 @@ Application::~Application() {
     glfwTerminate();
 }
 
-Application::Application() {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-    initGL();
-    initApplication();
+void Application::initScene() {
 
     Object::Builder objBuilder;
     Scene::Builder sceneBuilder;
@@ -302,40 +299,59 @@ Application::Application() {
         .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f }, gl::Light::Point)
         .emplaceLight(glm::vec3 { 8.f }, glm::vec3 { -3.f, -8.f, 0.f }, gl::Light::Directional)
         .emplaceLight(glm::vec3 { 1.f, 0.f, 0.f }, glm::vec3 { -10.f, 1.f, -5.f }, glm::vec3 { 0.f, -2.f, 0.f }, 12.5f)
-        // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 6.f, 6.0f })
-        // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, -6.f, -6.0f })
-        // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, -8.0f })
-        // .emplaceLight(glm::vec3 { 1.f }, glm::vec3 { 0.f, 0.f, 8.0f })
         .emplaceAmbientLight(glm::vec3 { .1f })
         .addObject(
             objBuilder
-            .emplaceObject(ModelLoader::get("a380_alt/untitled"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
-            .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
-            .setMovement(
-                std::make_shared<MovementCalculator>(
+                .emplaceObject(ModelLoader::get("a380_alt/untitled"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+                .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
+                .setMovement(
+                    std::make_shared<MovementCalculator>(
                         //std::make_shared<Circle>(glm::vec3 { 0.f }, 10.f),
                         std::make_shared<Line>(glm::vec3 { -100.f, 10.f, -15.f }, glm::vec3 { 100.f, 25.f, 25.f }),
                         glm::vec3 { 0.f, -(M_PI_4/2), 0.f },
                         7.0
                     )
-            )
-            .build()
+                )
+                .build()
         ).addObject(
             objBuilder
-            .emplaceObject(ModelLoader::get("a380_alt/untitled"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
-            .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
-            .setMovement(
-                std::make_shared<MovementCalculator>(
-                    std::make_shared<Circle>(glm::vec3 { 0.f, 20.f, 0.f }, 50.f),
-                    glm::vec3 { 0.0, 0.0, 0.0 },
-                    7.0
+                .emplaceObject(ModelLoader::get("a380_alt/untitled"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+                .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
+                .setMovement(
+                    std::make_shared<MovementCalculator>(
+                        std::make_shared<Circle>(glm::vec3 { 0.f, 20.f, 0.f }, 50.f),
+                        glm::vec3 { 0.0, 0.0, 0.0 },
+                        7.0
+                    )
                 )
-            )
-            .build()
-
+                .build()
+        ).addObject(
+            objBuilder
+                .emplaceObject(ModelLoader::get("a380_alt/untitled"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+                .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
+                .setMovement(
+                    std::make_shared<MovementCalculator>(
+                        std::make_shared<BezierCurve>(
+                            glm::vec3 { 80.f, 20.f, 50.f },
+                            glm::vec3 { 20.f, 20.f, -50.f },
+                            glm::vec3 { -30.f, 20.f, 20.f },
+                            glm::vec3 { -80.f, 20.f, 10.f }
+                        ),
+                        glm::vec3 { 0.0, 0.0, 0.0 },
+                        10.0
+                    )
+                )
+                .build()
         )
         .setCameraPosition(0.f, 1.f, 3.f)
         .build();
+}
+
+Application::Application() {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    initGL();
+    initApplication();
+    initScene();
 
 }
 
