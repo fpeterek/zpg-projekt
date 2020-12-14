@@ -9,15 +9,18 @@
 /* -------------------- Line -------------------- */
 
 static glm::vec3 calcDir(const glm::vec3 begin, const glm::vec3 end) {
+
     glm::vec3 dir = glm::vec3 { end.x, 0.f, end.z } - glm::vec3 { begin.x, 0.f, begin.z };
     dir = glm::normalize(dir);
     std::cout << dir.x << ", " << dir.z << std::endl;
+
     float angle = std::acos(glm::dot(dir, glm::vec3 { 1.f, 0.f, 0.f }));
-    if (end.z < 0.f) {
+    if (dir.z < 0.f) {
         angle = 2*M_PI - angle;
     }
+
     std::cout << angle << std::endl;
-    return { 0.f, angle, 0.f };
+    return { 0.f, -angle, 0.f };
 }
 
 Line::Line(glm::vec3 begin, glm::vec3 end) : begin(begin), end(end), dir(calcDir(begin, end)) { }

@@ -306,9 +306,20 @@ void Application::initScene() {
                 .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
                 .setMovement(
                     std::make_shared<MovementCalculator>(
-                        //std::make_shared<Circle>(glm::vec3 { 0.f }, 10.f),
                         std::make_shared<Line>(glm::vec3 { -100.f, 10.f, -15.f }, glm::vec3 { 100.f, 25.f, 25.f }),
-                        glm::vec3 { 0.f, -(M_PI_4/2), 0.f },
+                        glm::vec3 { 0.f, 0.f, 0.f },
+                        7.0
+                    )
+                )
+                .build()
+        ).addObject(
+            objBuilder
+                .emplaceObject(ModelLoader::get("a380_alt/untitled"), ShaderManager::lambert(), TextureManager::getOrEmplace("grass", "resources/textures/grass.jpg"))
+                .setPosition(0.f, 10.f, 0.f).setScale(0.005f, 0.005f, 0.005f)
+                .setMovement(
+                    std::make_shared<MovementCalculator>(
+                        std::make_shared<Line>(glm::vec3 { -30.f, 5.f, 85.f }, glm::vec3 { 30.f, 25.f, -95.f }),
+                        glm::vec3 { 0.f, 0.f, 0.f },
                         7.0
                     )
                 )
