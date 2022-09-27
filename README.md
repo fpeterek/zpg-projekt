@@ -8,7 +8,7 @@ g++ main.cpp -std=c++17 -I ~/glfw/usr/local/include/ -I . -L ~/glfw/usr/local/li
 
 My PC:
 
-Manjaro, libraries installed using Pacman.
+Arch, libraries installed using Pacman.
 
 ```
 g++ -std=c++17 src/* -I include -lglfw -lglut -lGL -ldl -lSOIL -pthread -lassimp -lGLEW -O3 -o zpg
